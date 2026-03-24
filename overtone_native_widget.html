@@ -9,7 +9,6 @@
 <style>
   :root {
     --bg: #f4f4f6;
-    --sidebar-bg: #ffffff;
     --surface: #ffffff;
     --surface-2: #f7f7f9;
     --border: #e4e4ea;
@@ -34,887 +33,318 @@
     --radius-sm: 6px;
     --sidebar-w: 180px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    font-size: 13px;
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar-w);
-    background: var(--sidebar-bg);
-    border-right: 1px solid var(--border);
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0 0;
-    min-height: 100vh;
-  }
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 18px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: -0.2px;
-  }
-  .logo-ring {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa);
-  }
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 10px;
-  }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 8px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.12s;
-  }
-  .nav-item:hover { background: var(--surface-2); color: var(--text-primary); }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 13px; line-height: 1.5; min-height: 100vh; display: flex; }
+  .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; display: flex; flex-direction: column; padding: 20px 0 0; min-height: 100vh; }
+  .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 18px 24px; font-size: 16px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+  .logo-ring { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa); }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); cursor: pointer; }
   .nav-item.active { background: var(--purple-light); color: var(--purple); font-weight: 500; }
-  .nav-icon { font-size: 14px; opacity: 0.7; }
   .nav-chevron { margin-left: auto; font-size: 10px; color: var(--text-muted); }
-
-  /* ── MAIN ── */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* Top bar */
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  .topbar-logo {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa);
-  }
-
-  /* Content */
-  .content {
-    padding: 28px 32px;
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  .page-title {
-    font-size: 26px;
-    font-weight: 300;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-    margin-bottom: 20px;
-  }
-
-  /* Sub tabs */
-  .subtabs {
-    display: flex;
-    align-items: flex-end;
-    gap: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .subtab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 8px 20px 10px;
-    font-size: 12px;
-    color: var(--text-muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.12s;
-  }
-  .subtab:hover { color: var(--text-secondary); }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 52px; display: flex; align-items: center; justify-content: flex-end; }
+  .topbar-logo { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa); }
+  .content { padding: 28px 32px; overflow-y: auto; flex: 1; }
+  .page-title { font-size: 26px; font-weight: 300; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 20px; }
+  .subtabs { display: flex; align-items: flex-end; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .subtab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 20px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .subtab.active { color: var(--purple); border-bottom-color: var(--purple); font-weight: 500; }
   .subtab-icon { font-size: 15px; }
-  .subtab-label { font-size: 11px; letter-spacing: 0.02em; }
-
-  /* Filter row */
-  .filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-  }
-  .filter-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex: 1;
-    max-width: 380px;
-  }
-  .filter-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--purple);
-  }
-  .filter-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  .chip-dot {
-    width: 10px; height: 10px;
-    border-radius: 2px;
-    background: var(--purple);
-    opacity: 0.6;
-  }
+  .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .filter-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; display: flex; align-items: center; gap: 14px; }
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--purple); }
+  .filter-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+  .chip-dot { width: 10px; height: 10px; border-radius: 2px; background: var(--purple); opacity: 0.6; }
   .chip-dot.lighter { opacity: 0.3; }
-
-  .type-select-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-  }
+  .type-select-wrap { display: flex; align-items: center; gap: 10px; margin-left: auto; }
   .type-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
-  .type-select {
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    padding: 6px 28px 6px 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: var(--text-primary);
-    background: var(--surface);
-    appearance: none;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239898b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-  }
-
-  .date-range-btn {
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    padding: 6px 28px 6px 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: var(--text-primary);
-    background: var(--surface);
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239898b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-  }
-
-  /* ── CHART CARD ── */
-  .chart-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 24px 14px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-  }
-  .chart-legend-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  .legend-line {
-    width: 20px; height: 2px;
-    background: var(--purple);
-    border-radius: 1px;
-  }
-
+  .type-select { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 28px 6px 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); appearance: none; cursor: pointer; }
+  .date-range-btn { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); cursor: pointer; }
+  .kw-input { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); width: 180px; }
+  .kw-input::placeholder { color: var(--text-muted); font-style: italic; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px 14px; margin-bottom: 20px; box-shadow: var(--shadow-sm); position: relative; }
+  .chart-legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--text-secondary); }
+  .legend-line { width: 20px; height: 2px; background: var(--purple); border-radius: 1px; }
   .chart-wrap { position: relative; user-select: none; }
-
-  .graph-point {
-    cursor: pointer;
-    transition: all 0.1s;
-  }
+  .graph-point { cursor: pointer; }
   .graph-point:hover { r: 7; }
-
-  /* hint */
-  .chart-hint {
-    text-align: right;
-    font-size: 11px;
-    color: var(--text-muted);
-    font-style: italic;
-    margin-top: 6px;
-  }
-
-  /* ── TABLE ── */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-  }
-  .table-head {
-    display: grid;
-    grid-template-columns: 32px 1fr 220px 130px 120px 120px;
-    padding: 10px 16px;
-    background: var(--purple);
-    gap: 12px;
-    align-items: center;
-  }
-  .th {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.9);
-    letter-spacing: 0.02em;
-  }
-  .table-row {
-    display: grid;
-    grid-template-columns: 32px 1fr 220px 130px 120px 120px;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    gap: 12px;
-    cursor: pointer;
-    transition: background 0.1s;
-    align-items: center;
-    position: relative;
-  }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .table-head { display: grid; grid-template-columns: 32px 1fr 200px 110px 120px 130px; padding: 10px 16px; background: var(--purple); gap: 12px; align-items: center; }
+  .th { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 0.02em; }
+  .table-row { display: grid; grid-template-columns: 32px 1fr 200px 110px 120px 130px; padding: 10px 16px; border-bottom: 1px solid var(--border); gap: 12px; cursor: pointer; transition: background 0.1s; align-items: center; }
   .table-row:last-child { border-bottom: none; }
   .table-row:hover { background: var(--purple-lighter); }
-  .table-row.active {
-    background: var(--purple-light);
-    border-left: 3px solid var(--purple);
-    padding-left: 13px;
-  }
-  .row-num {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  .row-headline {
-    font-size: 12.5px;
-    color: var(--text-primary);
-    font-weight: 400;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .table-row.active { background: var(--purple-light); border-left: 3px solid var(--purple); padding-left: 13px; }
+  .row-num { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .row-headline { font-size: 12.5px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .table-row.active .row-headline { font-weight: 500; color: var(--purple-dark); }
-  .row-url {
-    font-size: 12px;
-    color: var(--purple);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration: none;
-  }
+  .row-url { font-size: 12px; color: var(--purple); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row-date { font-size: 12px; color: var(--text-secondary); }
   .row-source { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .row-score {
-    font-size: 12px;
-    font-family: 'Inter', monospace;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .score-bar-track {
-    width: 40px; height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .score-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--purple);
-  }
+  .row-score { font-size: 11px; font-family: monospace; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+  .score-bar-track { width: 36px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: var(--purple); }
   .score-bar-fill.high { background: #1a8a52; }
   .score-bar-fill.mid { background: var(--purple); }
   .score-bar-fill.low { background: var(--text-muted); }
-
-  /* ══════════════════════════════════════════
-     EXPLAINABILITY POPUP
-     ══════════════════════════════════════════ */
-  .popup-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    pointer-events: none;
-  }
-
-  .popup {
-    position: absolute;
-    width: 360px;
-    background: var(--surface);
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-popup);
-    pointer-events: all;
-    opacity: 0;
-    transform: translateY(5px) scale(0.985);
-    transition: opacity 0.16s ease, transform 0.16s ease;
-    z-index: 600;
-    overflow: hidden;
-  }
-  .popup.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  /* Caret */
-  .popup-caret {
-    position: absolute;
-    top: -7px;
-    left: 28px;
-    width: 13px; height: 13px;
-    background: var(--surface);
-    border: 1px solid var(--border-mid);
-    border-right: none;
-    border-bottom: none;
-    transform: rotate(45deg);
-    z-index: 1;
-  }
-  .popup.caret-bottom .popup-caret {
-    top: auto;
-    bottom: -7px;
-    transform: rotate(225deg);
-  }
-
-  /* Popup top bar — purple stripe */
-  .popup-stripe {
-    background: var(--purple);
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .popup-stripe-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .popup-why-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.7);
-  }
-  .popup-score-badge {
-    font-size: 12px;
-    font-weight: 700;
-    color: #fff;
-    background: rgba(255,255,255,0.18);
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-family: 'Inter', monospace;
-  }
-  .popup-close {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 50%;
-    width: 20px; height: 20px;
-    color: rgba(255,255,255,0.8);
-    font-size: 11px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.1s;
-    line-height: 1;
-  }
+  .popup-overlay { position: fixed; inset: 0; z-index: 500; pointer-events: none; }
+  .popup { position: absolute; width: 360px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: var(--radius); box-shadow: var(--shadow-popup); pointer-events: all; opacity: 0; transform: translateY(5px) scale(0.985); transition: opacity 0.16s ease, transform 0.16s ease; z-index: 600; overflow: hidden; }
+  .popup.visible { opacity: 1; transform: translateY(0) scale(1); }
+  .popup-caret { position: absolute; top: -7px; left: 28px; width: 13px; height: 13px; background: var(--surface); border: 1px solid var(--border-mid); border-right: none; border-bottom: none; transform: rotate(45deg); z-index: 1; }
+  .popup.caret-bottom .popup-caret { top: auto; bottom: -7px; transform: rotate(225deg); }
+  .popup-stripe { background: var(--purple); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .popup-stripe-left { display: flex; align-items: center; gap: 8px; }
+  .popup-why-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+  .popup-score-badge { font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 20px; }
+  .popup-close { background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 20px; height: 20px; color: rgba(255,255,255,0.8); font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
   .popup-close:hover { background: rgba(255,255,255,0.28); }
-
-  /* Popup headline */
-  .popup-head {
-    padding: 12px 16px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .popup-source {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .popup-source-dot {
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
-  .popup-headline {
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1.4;
-  }
-
-  /* Verdict */
-  .popup-verdict {
-    margin: 10px 16px;
-    padding: 9px 12px;
-    background: var(--purple-lighter);
-    border-left: 3px solid var(--purple);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 12px;
-    line-height: 1.55;
-    color: var(--text-secondary);
-  }
-  .popup-verdict strong { color: var(--text-primary); font-weight: 600; }
-
-  /* Signals */
+  .popup-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--border); }
+  .popup-source { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .popup-headline { font-size: 13.5px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .popup-verdict { margin: 10px 16px; padding: 9px 12px; background: var(--purple-lighter); border-left: 3px solid var(--purple); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; line-height: 1.55; color: var(--text-secondary); }
   .popup-signals { padding: 0 16px 10px; }
-  .signals-title {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 7px;
-  }
-  .signal-row-item {
-    display: flex;
-    align-items: center;
-    padding: 7px 10px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    margin-bottom: 5px;
-    gap: 8px;
-    background: var(--surface-2);
-  }
-  .sig-icon { font-size: 13px; flex-shrink: 0; line-height: 1; }
+  .signals-title { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; }
+  .signal-row-item { display: flex; align-items: center; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 5px; gap: 8px; background: var(--surface-2); }
+  .sig-icon { font-size: 13px; flex-shrink: 0; }
   .sig-text { flex: 1; min-width: 0; }
-  .sig-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-  .sig-detail {
-    font-size: 11px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .sig-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber); }
-  .badge-red { background: var(--red-bg); color: var(--red); }
+  .sig-name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .sig-detail { font-size: 11px; color: var(--text-muted); }
+  .sig-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+  .badge-green  { background: var(--green-bg);  color: var(--green); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber); }
+  .badge-red    { background: var(--red-bg);    color: var(--red); }
   .badge-purple { background: var(--purple-light); color: var(--purple-dark); }
-  .badge-neutral { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
-
-  /* Concepts */
-  .popup-concepts {
-    padding: 0 16px 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-  .concept-pill {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-  }
-  .concept-pill.matched {
-    background: var(--purple-light);
-    border-color: var(--purple-border);
-    color: var(--purple-dark);
-    font-weight: 500;
-  }
-
-  /* Footer */
-  .popup-footer {
-    display: flex;
-    gap: 8px;
-    padding: 10px 16px 14px;
-    border-top: 1px solid var(--border);
-    background: var(--surface-2);
-  }
-  .pfooter-btn {
-    flex: 1;
-    padding: 7px 10px;
-    border-radius: var(--radius-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.12s;
-    border: 1px solid var(--border-mid);
-    background: var(--surface);
-    color: var(--text-secondary);
-  }
+  .badge-grey   { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+  .popup-concepts { padding: 0 16px 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .concept-pill { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-secondary); }
+  .concept-pill.matched { background: var(--purple-light); border-color: var(--purple-border); color: var(--purple-dark); font-weight: 500; }
+  .popup-footer { display: flex; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--border); background: var(--surface-2); }
+  .pfooter-btn { flex: 1; padding: 7px 10px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; border: 1px solid var(--border-mid); background: var(--surface); color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; justify-content: center; }
   .pfooter-btn:hover { background: var(--border); color: var(--text-primary); }
-  .pfooter-btn.primary {
-    background: var(--purple);
-    color: #fff;
-    border-color: var(--purple);
-  }
+  .pfooter-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
   .pfooter-btn.primary:hover { background: var(--purple-dark); }
-
-  /* Keyword input */
-  .kw-input {
-    border: 1px solid var(--border-mid);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    color: var(--text-primary);
-    background: var(--surface);
-    width: 180px;
-  }
-  .kw-input::placeholder { color: var(--text-muted); font-style: italic; }
-  .kw-input:focus { outline: none; border-color: var(--purple); }
-
-  /* scrollbar */
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-ring"></div>
-    Overtone
-  </div>
+  <div class="sidebar-logo"><div class="logo-ring"></div>Overtone</div>
   <div class="sidebar-nav">
-    <div class="nav-item">
-      <span class="nav-icon">🔍</span> Overview
-    </div>
-    <div class="nav-item active">
-      <span class="nav-icon">📊</span> Insights
-    </div>
-    <div class="nav-item">
-      <span class="nav-icon">📁</span> Collections
-      <span class="nav-chevron">›</span>
-    </div>
+    <div class="nav-item">🔍 Overview</div>
+    <div class="nav-item active">📊 Insights</div>
+    <div class="nav-item">📁 Collections <span class="nav-chevron">›</span></div>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-  <div class="topbar">
-    <div class="topbar-logo"></div>
-  </div>
-
+  <div class="topbar"><div class="topbar-logo"></div></div>
   <div class="content">
     <div class="page-title">Insights</div>
 
-    <!-- Subtabs -->
     <div class="subtabs">
-      <div class="subtab">
-        <span class="subtab-icon">📋</span>
-        <span class="subtab-label">OVERVIEW</span>
-      </div>
-      <div class="subtab active">
-        <span class="subtab-icon">📡</span>
-        <span class="subtab-label">MONITOR</span>
-      </div>
-      <div class="subtab">
-        <span class="subtab-icon">📰</span>
-        <span class="subtab-label">ARTICLES</span>
-      </div>
-      <div style="margin-left: 20px; display:flex; align-items:center; gap:10px; padding-bottom:2px;">
+      <div class="subtab"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
+      <div class="subtab active"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
+      <div class="subtab"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
+      <div style="margin-left:20px;display:flex;align-items:center;gap:10px;padding-bottom:2px;">
         <input class="kw-input" placeholder="Add a Keyword" />
-        <button class="date-range-btn">Jan 2025 – Jul 2025 · South Africa</button>
+        <button class="date-range-btn">Jan 2025 – Oct 2025 · South Africa</button>
       </div>
     </div>
 
-    <!-- Filter bar -->
     <div class="filter-bar">
       <div class="filter-box">
         <span class="filter-label">Your Filters:</span>
-        <div class="filter-chip">
-          <div class="chip-dot"></div> All Sources
-        </div>
-        <div class="filter-chip">
-          <div class="chip-dot lighter"></div> businesslive.co.za
-        </div>
+        <div class="filter-chip"><div class="chip-dot"></div> All Sources</div>
+        <div class="filter-chip"><div class="chip-dot lighter"></div> businesslive.co.za</div>
       </div>
       <div class="type-select-wrap">
         <span class="type-label">Type:</span>
         <select class="type-select">
+          <option>recommendation_level</option>
           <option>overtone_type</option>
-          <option>relevance_score</option>
           <option>sentiment</option>
         </select>
       </div>
     </div>
 
-    <!-- CHART -->
     <div class="chart-card">
       <div class="chart-legend-row">
         <div class="legend-line"></div>
-        Relevance Score
+        Relevance Score (predicted_performance)
         <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a point to see why Overtone scored it</span>
       </div>
-      <div class="chart-wrap" id="chart-wrap">
-        <svg width="100%" height="200" viewBox="0 0 880 200" preserveAspectRatio="none" style="overflow:visible">
-          <!-- Y axis label -->
-          <text x="-2" y="15" fill="#9898b0" font-size="10" font-family="Inter" text-anchor="end">60</text>
-          <text x="-2" y="75" fill="#9898b0" font-size="10" font-family="Inter" text-anchor="end">40</text>
-          <text x="-2" y="135" fill="#9898b0" font-size="10" font-family="Inter" text-anchor="end">20</text>
-          <text x="-2" y="180" fill="#9898b0" font-size="10" font-family="Inter" text-anchor="end">0</text>
-
-          <!-- Grid lines -->
-          <line x1="10" y1="10" x2="870" y2="10" stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="70" x2="870" y2="70" stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="130" x2="870" y2="130" stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="178" x2="870" y2="178" stroke="#e4e4ea" stroke-width="1"/>
-
-          <!-- Area -->
+      <div class="chart-wrap">
+        <svg width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible">
           <defs>
             <linearGradient id="areaG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#6c63e0" stop-opacity="0.18"/>
+              <stop offset="0%" stop-color="#6c63e0" stop-opacity="0.15"/>
               <stop offset="100%" stop-color="#6c63e0" stop-opacity="0.01"/>
             </linearGradient>
           </defs>
-          <!-- Matches Overtone's actual curve shape: rises, peaks ~Jan29, dips, rises to Feb4, dips, rises Feb7-8, dips sharply, small bump Feb11 -->
-          <path d="M40,155 L100,135 L160,100 L220,82 L280,72 L330,90 L380,78 L420,58 L460,75 L520,68 L570,45 L620,80 L670,115 L720,165 L770,140 L820,150 L820,178 L40,178Z"
-            fill="url(#areaG)"/>
-          <polyline
-            points="40,155 100,135 160,100 220,82 280,72 330,90 380,78 420,58 460,75 520,68 570,45 620,80 670,115 720,165 770,140 820,150"
-            fill="none" stroke="#6c63e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="10" y1="10"  x2="870" y2="10"  stroke="#e4e4ea" stroke-width="1"/>
+          <line x1="10" y1="60"  x2="870" y2="60"  stroke="#e4e4ea" stroke-width="1"/>
+          <line x1="10" y1="110" x2="870" y2="110" stroke="#e4e4ea" stroke-width="1"/>
+          <line x1="10" y1="160" x2="870" y2="160" stroke="#e4e4ea" stroke-width="1"/>
+          <polygon points="30,178 30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168 830,178" fill="url(#areaG)"/>
+          <polyline points="30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168" fill="none" stroke="#6c63e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="graph-point" cx="30" cy="20" r="5.5" fill="#fff" stroke="#1a7a4a" stroke-width="2.5" data-story="0" onclick="triggerGraph(event,0)"/>
+<circle class="graph-point" cx="118" cy="143" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="1" onclick="triggerGraph(event,1)"/>
+<circle class="graph-point" cx="207" cy="157" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="2" onclick="triggerGraph(event,2)"/>
+<circle class="graph-point" cx="296" cy="164" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="3" onclick="triggerGraph(event,3)"/>
+<circle class="graph-point" cx="385" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="4" onclick="triggerGraph(event,4)"/>
+<circle class="graph-point" cx="474" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="5" onclick="triggerGraph(event,5)"/>
+<circle class="graph-point" cx="563" cy="167" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="6" onclick="triggerGraph(event,6)"/>
+<circle class="graph-point" cx="652" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="7" onclick="triggerGraph(event,7)"/>
+<circle class="graph-point" cx="741" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="8" onclick="triggerGraph(event,8)"/>
+<circle class="graph-point" cx="830" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="9" onclick="triggerGraph(event,9)"/>
 
-          <!-- X axis dates -->
-          <text x="40"  y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">25 janv.</text>
-          <text x="160" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">27 janv.</text>
-          <text x="280" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">29 janv.</text>
-          <text x="420" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">31 janv.</text>
-          <text x="570" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">4 févr.</text>
-          <text x="670" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">7 févr.</text>
-          <text x="820" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">11 févr.</text>
+          <text x="30" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">1 Apr</text>
+<text x="118" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">31 Jan</text>
+<text x="207" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
+<text x="296" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">6 Feb</text>
+<text x="385" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">18 Jul</text>
+<text x="474" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">28 Jan</text>
+<text x="563" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
+<text x="652" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
+<text x="741" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">29 May</text>
+<text x="830" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
 
-          <!-- Clickable points -->
-          <circle class="graph-point" cx="40"  cy="155" r="4.5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="0" onclick="triggerGraph(event,0)"/>
-          <circle class="graph-point" cx="160" cy="100" r="4.5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="1" onclick="triggerGraph(event,1)"/>
-          <circle class="graph-point" cx="280" cy="72"  r="5"   fill="#fff" stroke="#1a8a52" stroke-width="2.5" data-story="2" onclick="triggerGraph(event,2)"/>
-          <circle class="graph-point" cx="380" cy="78"  r="4.5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="3" onclick="triggerGraph(event,3)"/>
-          <circle class="graph-point" cx="420" cy="58"  r="5"   fill="#fff" stroke="#1a8a52" stroke-width="2.5" data-story="4" onclick="triggerGraph(event,4)"/>
-          <circle class="graph-point" cx="570" cy="45"  r="5.5" fill="#fff" stroke="#1a8a52" stroke-width="2.5" data-story="5" onclick="triggerGraph(event,5)"/>
-          <circle class="graph-point" cx="670" cy="115" r="4.5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="6" onclick="triggerGraph(event,6)"/>
-          <circle class="graph-point" cx="820" cy="150" r="4.5" fill="#fff" stroke="#c0392b" stroke-width="2" data-story="7" onclick="triggerGraph(event,7)"/>
         </svg>
       </div>
+      <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
     </div>
 
-    <!-- TABLE — matching Overtone's exact columns -->
     <div class="table-wrap">
       <div class="table-head">
         <div class="th"></div>
+        <div class="th">Headline</div>
+        <div class="th">URL</div>
+        <div class="th">Date Published</div>
+        <div class="th">source_name</div>
+        <div class="th">recommendation_level</div>
+      </div>
+      
       <div class="table-row" data-story="0" onclick="triggerRow(event,0)">
         <div class="row-num">1.</div>
-        <div class="row-headline">Standard Bank closes in on most valuable African bank s…</div>
-        <div class="row-url">www.businesslive.co.za/bd/companies/fi…</div>
+        <div class="row-headline">Standard Bank closes in on most valuable African ban…</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
         <div class="row-date">1 Apr 2025</div>
         <div class="row-source">businesslive.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill high" style="width:95%"></div></div>
-          0.1458677…
+          0.1458677
         </div>
       </div>
       <div class="table-row" data-story="1" onclick="triggerRow(event,1)">
         <div class="row-num">2.</div>
-        <div class="row-headline">Eskom warns Stage 4 blackouts may be implemented this w…</div>
-        <div class="row-url">www.enca.com/news-top-stories/eskom-wa…</div>
+        <div class="row-headline">Eskom warns Stage 4 blackouts may be implemented thi…</div>
+        <div class="row-url">www.enca.com/news-top-stories/eskom-…</div>
         <div class="row-date">31 Jan 2025</div>
         <div class="row-source">enca.com</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:41%"></div></div>
-          0.0642717…
+          0.0642717
         </div>
       </div>
       <div class="table-row" data-story="2" onclick="triggerRow(event,2)">
         <div class="row-num">3.</div>
-        <div class="row-headline">February sales of VW and BMW electric cars top Tesla's …</div>
-        <div class="row-url">www.businesslive.co.za/bd/companies/20…</div>
+        <div class="row-headline">February sales of VW and BMW electric cars top Tesla…</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
         <div class="row-date">24 Mar 2025</div>
         <div class="row-source">businesslive.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:35%"></div></div>
-          0.0551584…
+          0.0551584
         </div>
       </div>
       <div class="table-row" data-story="3" onclick="triggerRow(event,3)">
         <div class="row-num">4.</div>
         <div class="row-headline">DRDGold reaps benefits of higher gold price</div>
-        <div class="row-url">www.businesslive.co.za/bd/companies/mi…</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
         <div class="row-date">6 Feb 2025</div>
         <div class="row-source">businesslive.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
-          0.0500944…
+          0.0500944
         </div>
       </div>
       <div class="table-row" data-story="4" onclick="triggerRow(event,4)">
         <div class="row-num">5.</div>
-        <div class="row-headline">Vodacom's Maziv deal gets makeover ahead of crucial hea…</div>
-        <div class="row-url">techcentral.co.za/vodacoms-maziv-deal-…</div>
+        <div class="row-headline">Vodacom's Maziv deal gets makeover ahead of crucial …</div>
+        <div class="row-url">techcentral.co.za/vodacoms-maziv-dea…</div>
         <div class="row-date">18 Jul 2025</div>
         <div class="row-source">techcentral.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
-          0.0497451…
+          0.0497451
         </div>
       </div>
       <div class="table-row" data-story="5" onclick="triggerRow(event,5)">
         <div class="row-num">6.</div>
-        <div class="row-headline">South Africa renews business-government pact to boost g…</div>
-        <div class="row-url">www.moneyweb.co.za/news/south-africa/s…</div>
+        <div class="row-headline">South Africa renews business-government pact to boos…</div>
+        <div class="row-url">www.moneyweb.co.za/news/south-africa…</div>
         <div class="row-date">28 Jan 2026</div>
         <div class="row-source">moneyweb.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
-          0.0496706…
+          0.0496706
         </div>
       </div>
       <div class="table-row" data-story="6" onclick="triggerRow(event,6)">
         <div class="row-num">7.</div>
-        <div class="row-headline">Minerals Council advocates for electricity grid deregul…</div>
-        <div class="row-url">www.sabcnews.com/sabcnews/minerals-cou…</div>
+        <div class="row-headline">Minerals Council advocates for electricity grid dere…</div>
+        <div class="row-url">www.sabcnews.com/sabcnews/minerals-c…</div>
         <div class="row-date">8 Oct 2025</div>
         <div class="row-source">sabcnews.com</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:31%"></div></div>
-          0.0481966…
+          0.0481966
         </div>
       </div>
       <div class="table-row" data-story="7" onclick="triggerRow(event,7)">
         <div class="row-num">8.</div>
         <div class="row-headline">Green talent makes for a red-hot Nursery</div>
-        <div class="row-url">www.citizen.co.za/sport/horses/green-t…</div>
+        <div class="row-url">www.citizen.co.za/sport/horses/green…</div>
         <div class="row-date">24 Mar 2025</div>
         <div class="row-source">citizen.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
-          0.0475762…
+          0.0475762
         </div>
       </div>
       <div class="table-row" data-story="8" onclick="triggerRow(event,8)">
         <div class="row-num">9.</div>
         <div class="row-headline">BROKERS' NOTES: Buy Curro, sell Mr Price</div>
-        <div class="row-url">www.businesslive.co.za/fm/money-and-in…</div>
+        <div class="row-url">www.businesslive.co.za/fm/money-and-…</div>
         <div class="row-date">29 May 2025</div>
         <div class="row-source">businesslive.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
-          0.0473008…
+          0.0473008
         </div>
       </div>
       <div class="table-row" data-story="9" onclick="triggerRow(event,9)">
         <div class="row-num">10.</div>
-        <div class="row-headline">SA's R1 trillion energy bet: Why CFOs can't wait until …</div>
-        <div class="row-url">cbn.co.za/industry-news/renewable-ener…</div>
+        <div class="row-headline">SA's R1 trillion energy bet: Why CFOs can't wait unt…</div>
+        <div class="row-url">cbn.co.za/industry-news/renewable-en…</div>
         <div class="row-date">8 Oct 2025</div>
         <div class="row-source">cbn.co.za</div>
         <div class="row-score">
           <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
-          0.0472744…
-        </div>
-      </div>
-    
-        <div class="row-headline">Tokyo Olympics legacy: how sport sponsorships changed brand per…</div>
-        <div class="row-url">https://dentsu.com/insights/olympics-spons…</div>
-        <div class="row-date">2 févr. 2026</div>
-        <div class="row-source">Dentsu Insights</div>
-        <div class="row-score">
-          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:61%"></div></div>
-          0.0612190…
-        </div>
-      </div>
-
-      <div class="table-row" data-story="3" onclick="triggerRow(event,3)">
-        <div class="row-num">6.</div>
-        <div class="row-headline">DJ Snake confirms Tokyo and Osaka dates — biggest Asia tour yet</div>
-        <div class="row-url">https://consequenceofsound.net/dj-snake-j…</div>
-        <div class="row-date">30 janv. 2026</div>
-        <div class="row-source">Consequence of Sound</div>
-        <div class="row-score">
-          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:54%"></div></div>
-          0.0543001…
-        </div>
-      </div>
-
-      <div class="table-row" data-story="1" onclick="triggerRow(event,1)">
-        <div class="row-num">7.</div>
-        <div class="row-headline">Nike x Pharrell Japan collection sells out in 12 minutes — what…</div>
-        <div class="row-url">https://nikkei.com/marketing/nike-pharrell…</div>
-        <div class="row-date">27 janv. 2026</div>
-        <div class="row-source">Nikkei Marketing</div>
-        <div class="row-score">
-          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:48%"></div></div>
-          0.0478554…
-        </div>
-      </div>
-
-      <div class="table-row" data-story="6" onclick="triggerRow(event,6)">
-        <div class="row-num">8.</div>
-        <div class="row-headline">Japan vending machine sales hit record high — convenience culture…</div>
-        <div class="row-url">https://japantimes.co.jp/business/vending-…</div>
-        <div class="row-date">4 févr. 2026</div>
-        <div class="row-source">Japan Times</div>
-        <div class="row-score">
-          <div class="score-bar-track"><div class="score-bar-fill low" style="width:33%"></div></div>
-          0.0334872…
+          0.0472744
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- ══════════════════════════════════
-     EXPLAINABILITY POPUP
-     ══════════════════════════════════ -->
 <div class="popup-overlay" id="popup-overlay">
   <div class="popup" id="popup">
     <div class="popup-caret" id="popup-caret"></div>
-
-    <!-- Purple stripe header -->
     <div class="popup-stripe">
       <div class="popup-stripe-left">
         <span class="popup-why-label">Why this score</span>
@@ -922,471 +352,36 @@
       </div>
       <button class="popup-close" onclick="closePopup()">✕</button>
     </div>
-
-    <!-- Headline -->
     <div class="popup-head">
       <div class="popup-source" id="pop-source"></div>
       <div class="popup-headline" id="pop-headline"></div>
     </div>
-
-    <!-- Verdict -->
     <div class="popup-verdict" id="pop-verdict"></div>
-
-    <!-- Signals -->
     <div class="popup-signals">
       <div class="signals-title">Scoring signals</div>
       <div id="pop-signals"></div>
     </div>
-
-    <!-- Concepts -->
     <div class="popup-concepts" id="pop-concepts"></div>
-
-    <!-- Footer -->
     <div class="popup-footer">
-      <button class="pfooter-btn primary">Article Deepdive →</button>
+      <a class="pfooter-btn primary" id="pop-deepdive" href="#" target="_blank">Article Deepdive →</a>
       <button class="pfooter-btn" onclick="closePopup()">Did we get it wrong?</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ─────────────────────────────────────────
-   STORY DATA
-   Brand: Coca-Cola  |  Market: Japan
-   Context: ¥100M marketing spend planning.
-   Agency needs to know what audiences care
-   about before campaign activation.
+const stories = [{"id": 0, "headline": "Standard Bank closes in on most valuable African bank spot", "source": "businesslive.co.za", "date": "1 Apr 2025", "url": "https://www.businesslive.co.za/bd/companies/financial-services/2025-04-01-standard-bank-closes-in-on-most-valuable-african-bank-spot/", "score": 0.1458677, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard News content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 1, "headline": "Eskom warns Stage 4 blackouts may be implemented this weekend", "source": "enca.com", "date": "31 Jan 2025", "url": "https://www.enca.com/news-top-stories/eskom-warns-stage-4-blackouts-may-be-implemented-weekend", "score": 0.0642717, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. enca.com rarely publishes Reporting Pieces content (7% of their articles, they mostly cover Standard News at 57%)", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 2, "headline": "February sales of VW and BMW electric cars top Tesla's EVs", "source": "businesslive.co.za", "date": "24 Mar 2025", "url": "https://www.businesslive.co.za/bd/companies/2025-03-24-february-sales-of-vw-and-bmw-electric-cars-top-teslas-evs/", "score": 0.0551584, "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 0% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)", "signals": [{"name": "Tone", "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).", "badge": "Neutral", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 3, "headline": "DRDGold reaps benefits of higher gold price", "source": "businesslive.co.za", "date": "6 Feb 2025", "url": "https://www.businesslive.co.za/bd/companies/mining/2025-02-06-drdgold-reaps-benefits-of-higher-gold-price/", "score": 0.0500944, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard News content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 4, "headline": "Vodacom's Maziv deal gets makeover ahead of crucial hearing", "source": "techcentral.co.za", "date": "18 Jul 2025", "url": "https://techcentral.co.za/vodacoms-maziv-deal-makeover-hearing/267031/", "score": 0.0497451, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. techcentral.co.za commonly publishes Reporting Pieces content (67% of their articles).", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 5, "headline": "South Africa renews business-government pact to boost growth", "source": "moneyweb.co.za", "date": "28 Jan 2026", "url": "https://www.moneyweb.co.za/news/south-africa/south-africa-renews-business-government-pact-to-boost-growth/", "score": 0.0496706, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 6, "headline": "Minerals Council advocates for electricity grid deregulations", "source": "sabcnews.com", "date": "8 Oct 2025", "url": "https://www.sabcnews.com/sabcnews/minerals-council-advocates-for-electricity-grid-deregulations/", "score": 0.0481966, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Interview Stories content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 7, "headline": "Green talent makes for a red-hot Nursery", "source": "citizen.co.za", "date": "24 Mar 2025", "url": "https://www.citizen.co.za/sport/horses/green-talent-makes-for-a-red-hot-nursery/", "score": 0.0475762, "verdict": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational).", "badge": "Happy", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 8, "headline": "BROKERS' NOTES: Buy Curro, sell Mr Price", "source": "businesslive.co.za", "date": "29 May 2025", "url": "https://www.businesslive.co.za/fm/money-and-investing/2025-05-29-brokers-notes-buy-curro-sell-mr-price/", "score": 0.0473008, "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)", "signals": [{"name": "Tone", "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).", "badge": "Neutral", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 9, "headline": "SA's R1 trillion energy bet: Why CFOs can't wait until 2030", "source": "cbn.co.za", "date": "8 Oct 2025", "url": "https://cbn.co.za/industry-news/renewable-energy-alternative-energy-solutions-news/sas-r1-trillion-energy-bet-why-cfos-cant-wait-until-2030/", "score": 0.0472744, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard Opinion content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}];
 
-   In production: replace this array with
-   JSON parsed from BigQuery via Python.
-   Shape must match this structure exactly.
-───────────────────────────────────────── */
-const stories = [
-  {
-    "id": 0,
-    "headline": "Standard Bank closes in on most valuable African bank spot",
-    "source": "businesslive.co.za",
-    "date": "1 Apr 2025",
-    "url": "https://www.businesslive.co.za/bd/companies/financial-services/2025-04-01-standard-bank-closes-in-on-most-valuable-african-bank-spot/",
-    "score": 0.1458677,
-    "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Standard News content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 0% of articles in the last 30 days.",
-        "badge": "Top 0%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 1,
-    "headline": "Eskom warns Stage 4 blackouts may be implemented this weekend",
-    "source": "enca.com",
-    "date": "31 Jan 2025",
-    "url": "https://www.enca.com/news-top-stories/eskom-warns-stage-4-blackouts-may-be-implemented-weekend",
-    "score": 0.0642717,
-    "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. enca.com rarely publishes Reporting Pieces content (7% of their articles, they mostly cover Standard News at 57%)",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 0% of articles in the last 30 days.",
-        "badge": "Top 0%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 2,
-    "headline": "February sales of VW and BMW electric cars top Tesla's EVs",
-    "source": "businesslive.co.za",
-    "date": "24 Mar 2025",
-    "url": "https://www.businesslive.co.za/bd/companies/2025-03-24-february-sales-of-vw-and-bmw-electric-cars-top-teslas-evs/",
-    "score": 0.0551584,
-    "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 0% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).",
-        "badge": "Neutral",
-        "color": "amber",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 0% of articles in the last 30 days.",
-        "badge": "Top 0%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 3,
-    "headline": "DRDGold reaps benefits of higher gold price",
-    "source": "businesslive.co.za",
-    "date": "6 Feb 2025",
-    "url": "https://www.businesslive.co.za/bd/companies/mining/2025-02-06-drdgold-reaps-benefits-of-higher-gold-price/",
-    "score": 0.0500944,
-    "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Standard News content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 0% of articles in the last 30 days.",
-        "badge": "Top 0%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 4,
-    "headline": "Vodacom's Maziv deal gets makeover ahead of crucial hearing - TechCentral",
-    "source": "techcentral.co.za",
-    "date": "18 Jul 2025",
-    "url": "https://techcentral.co.za/vodacoms-maziv-deal-makeover-hearing/267031/",
-    "score": 0.0497451,
-    "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. techcentral.co.za commonly publishes Reporting Pieces content (67% of their articles).",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 0% of articles in the last 30 days.",
-        "badge": "Top 0%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 5,
-    "headline": "South Africa renews business-government pact to boost growth",
-    "source": "moneyweb.co.za",
-    "date": "28 Jan 2026",
-    "url": "https://www.moneyweb.co.za/news/south-africa/south-africa-renews-business-government-pact-to-boost-growth/",
-    "score": 0.0496706,
-    "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 1% of articles in the last 30 days.",
-        "badge": "Top 1%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 6,
-    "headline": "Minerals Council advocates for electricity grid deregulations",
-    "source": "sabcnews.com",
-    "date": "8 Oct 2025",
-    "url": "https://www.sabcnews.com/sabcnews/minerals-council-advocates-for-electricity-grid-deregulations/",
-    "score": 0.0481966,
-    "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Interview Stories content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 1% of articles in the last 30 days.",
-        "badge": "Top 1%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 7,
-    "headline": "Green talent makes for a red-hot Nursery | The Citizen",
-    "source": "citizen.co.za",
-    "date": "24 Mar 2025",
-    "url": "https://www.citizen.co.za/sport/horses/green-talent-makes-for-a-red-hot-nursery/",
-    "score": 0.0475762,
-    "verdict": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational).",
-        "badge": "Happy",
-        "color": "amber",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 1% of articles in the last 30 days.",
-        "badge": "Top 1%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 8,
-    "headline": "BROKERS' NOTES: Buy Curro, sell Mr Price",
-    "source": "businesslive.co.za",
-    "date": "29 May 2025",
-    "url": "https://www.businesslive.co.za/fm/money-and-investing/2025-05-29-brokers-notes-buy-curro-sell-mr-price/",
-    "score": 0.0473008,
-    "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).",
-        "badge": "Neutral",
-        "color": "amber",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 1% of articles in the last 30 days.",
-        "badge": "Top 1%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  },
-  {
-    "id": 9,
-    "headline": "SA's R1 trillion energy bet: Why CFOs can't wait until 2030",
-    "source": "cbn.co.za",
-    "date": "8 Oct 2025",
-    "url": "https://cbn.co.za/industry-news/renewable-energy-alternative-energy-solutions-news/sas-r1-trillion-energy-bet-why-cfos-cant-wait-until-2030/",
-    "score": 0.0472744,
-    "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.",
-    "signals": [
-      {
-        "name": "Tone",
-        "detail": "Informational tone is typical for Standard Opinion content in the last 30 days.",
-        "badge": "Informational",
-        "color": "grey",
-        "icon": "🌡️"
-      },
-      {
-        "name": "Brand Safety",
-        "detail": "No brand safety flags detected.",
-        "badge": "No flags",
-        "color": "green",
-        "icon": "🛡️"
-      },
-      {
-        "name": "Audience Concepts",
-        "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.",
-        "badge": "MTN Group (High)",
-        "color": "purple",
-        "icon": "📌"
-      },
-      {
-        "name": "Predicted Performance",
-        "detail": "Predicted performance is in the top 1% of articles in the last 30 days.",
-        "badge": "Top 1%",
-        "color": "green",
-        "icon": "📈"
-      }
-    ],
-    "concepts": [],
-    "matched": []
-  }
-];
-
-/* ── POPUP LOGIC ── */
-let activeId = null;
-let activeSrc = null;
+let activeId = null, activeSrc = null;
 
 function openPopup(id, anchorEl, src) {
   const s = stories.find(x => x.id === id);
   activeId = id; activeSrc = src;
-
-  document.getElementById('pop-score').textContent = s.score;
-  document.getElementById('pop-source').innerHTML =
-    s.source.split(' · ').join('</span><span class="popup-source-dot"></span><span>');
+  document.getElementById('pop-score').textContent = s.score.toFixed(7);
+  document.getElementById('pop-source').textContent = s.source + ' · ' + s.date;
   document.getElementById('pop-headline').textContent = s.headline;
-  document.getElementById('pop-verdict').innerHTML = s.verdict;
+  document.getElementById('pop-verdict').textContent = s.verdict;
+  document.getElementById('pop-deepdive').href = s.url;
 
   document.getElementById('pop-signals').innerHTML = s.signals.map(sig => `
     <div class="signal-row-item">
@@ -1395,55 +390,39 @@ function openPopup(id, anchorEl, src) {
         <div class="sig-name">${sig.name}</div>
         <div class="sig-detail">${sig.detail}</div>
       </div>
-      <span class="sig-badge ${sig.cls}">${sig.badge}</span>
+      <span class="sig-badge badge-${sig.color}">${sig.badge}</span>
     </div>
   `).join('');
 
-  document.getElementById('pop-concepts').innerHTML = s.concepts.map(c =>
-    `<span class="concept-pill ${s.matched.includes(c) ? 'matched' : ''}">${c}</span>`
-  ).join('');
+  document.getElementById('pop-concepts').innerHTML = s.concepts.length
+    ? s.concepts.map(c => `<span class="concept-pill ${s.matched.includes(c)?'matched':''}">${c}</span>`).join('')
+    : '';
 
   const popup = document.getElementById('popup');
   popup.className = 'popup';
-  positionPopup(popup, anchorEl, src);
+  positionPopup(popup, anchorEl);
   requestAnimationFrame(() => popup.classList.add('visible'));
 }
 
-function positionPopup(popup, anchor, src) {
+function positionPopup(popup, anchor) {
   const ov = document.getElementById('popup-overlay').getBoundingClientRect();
   const an = anchor.getBoundingClientRect();
-  const W = 360, GAP = 10;
-
+  const W = 360, GAP = 10, estH = 460;
   let left = an.left - ov.left;
   if (left + W > ov.width - 8) left = ov.width - W - 8;
   if (left < 8) left = 8;
-
-  const estH = 460;
-  let top, caretBottom;
-
-  if (an.top - estH - GAP > 60) {
-    // above anchor
-    top = an.top - ov.top - estH - GAP;
-    caretBottom = false;
-  } else {
-    // below anchor
-    top = an.bottom - ov.top + GAP;
-    caretBottom = true;
-    popup.classList.add('caret-bottom');
-  }
-
+  let top, caretBottom = false;
+  if (an.top - estH - GAP > 60) { top = an.top - ov.top - estH - GAP; }
+  else { top = an.bottom - ov.top + GAP; caretBottom = true; popup.classList.add('caret-bottom'); }
   popup.style.left = left + 'px';
   popup.style.top = top + 'px';
-
-  // nudge caret to point at anchor
-  const caretLeft = Math.max(16, Math.min(W - 30, an.left - ov.left - left + an.width / 2 - 6));
+  const caretLeft = Math.max(16, Math.min(W - 30, an.left - ov.left - left + an.width/2 - 6));
   document.getElementById('popup-caret').style.left = caretLeft + 'px';
 }
 
 function closePopup() {
   document.getElementById('popup').classList.remove('visible');
-  document.querySelectorAll('.table-row.active, .graph-point.active')
-    .forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.table-row.active, .graph-point.active').forEach(el => el.classList.remove('active'));
   activeId = null;
 }
 
@@ -1465,7 +444,7 @@ function triggerGraph(e, id) {
   closePopup();
   pt.classList.add('active');
   const row = document.querySelector(`.table-row[data-story="${id}"]`);
-  if (row) { row.classList.add('active'); row.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  if (row) { row.classList.add('active'); row.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   openPopup(id, pt, 'graph');
 }
 
