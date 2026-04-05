@@ -69,6 +69,33 @@
   .chart-wrap { position: relative; user-select: none; }
   .graph-point { cursor: pointer; }
   .graph-point:hover { r: 7; }
+
+  /* ── HOVER TOOLTIP ── */
+  .hover-tip {
+    position: fixed;
+    background: #1a1a2e;
+    color: #fff;
+    border-radius: 7px;
+    padding: 9px 13px;
+    font-size: 12px;
+    line-height: 1.5;
+    pointer-events: none;
+    z-index: 900;
+    max-width: 260px;
+    box-shadow: 0 4px 16px rgba(26,26,46,0.22);
+    opacity: 0;
+    transition: opacity 0.1s ease;
+  }
+  .hover-tip.visible { opacity: 1; }
+  .hover-tip-headline { font-weight: 500; margin-bottom: 4px; }
+  .hover-tip-score { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px; font-family: monospace; }
+  .hover-tip-signal { font-size: 11px; color: rgba(255,255,255,0.85); padding: 3px 7px; border-radius: 4px; display: inline-block; margin-top: 2px; }
+  .hover-tip-signal.green  { background: rgba(26,138,82,0.35); }
+  .hover-tip-signal.amber  { background: rgba(138,96,0,0.4); }
+  .hover-tip-signal.red    { background: rgba(192,57,43,0.4); }
+  .hover-tip-signal.purple { background: rgba(108,99,224,0.35); }
+  .hover-tip-signal.grey   { background: rgba(255,255,255,0.1); }
+  .hover-tip-hint { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 6px; }
   .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
   .table-head { display: grid; grid-template-columns: 32px 1fr 200px 110px 120px 130px; padding: 10px 16px; background: var(--purple); gap: 12px; align-items: center; }
   .th { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 0.02em; }
@@ -342,6 +369,14 @@
   </div>
 </div>
 
+<!-- HOVER TOOLTIP (graph points only) -->
+<div class="hover-tip" id="hover-tip">
+  <div class="hover-tip-headline" id="ht-headline"></div>
+  <div class="hover-tip-score" id="ht-score"></div>
+  <div id="ht-signal"></div>
+  <div class="hover-tip-hint">Click to see full breakdown</div>
+</div>
+
 <div class="popup-overlay" id="popup-overlay">
   <div class="popup" id="popup">
     <div class="popup-caret" id="popup-caret"></div>
@@ -452,6 +487,47 @@ document.addEventListener('click', e => {
   if (activeId !== null && !document.getElementById('popup').contains(e.target)) closePopup();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+
+/* ── HOVER TOOLTIP LOGIC ── */
+const hoverTip = document.getElementById('hover-tip');
+
+function getMostNotableSignal(s) {
+  // Priority: red → amber → green notable → purple → grey
+  const priority = ['red','amber','green','purple','grey'];
+  for (const color of priority) {
+    const sig = s.signals.find(sg => sg.color === color);
+    if (sig) return sig;
+  }
+  return s.signals[0];
+}
+
+function showHoverTip(e, id) {
+  const s = stories.find(x => x.id === id);
+  const sig = getMostNotableSignal(s);
+
+  document.getElementById('ht-headline').textContent = s.headline;
+  document.getElementById('ht-score').textContent = 'Audience relevance score: ' + s.score.toFixed(4);
+  document.getElementById('ht-signal').innerHTML =
+    `<span class="hover-tip-signal ${sig.color}">${sig.icon} ${sig.badge}</span>`;
+
+  // Position near cursor
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  hoverTip.style.left = Math.min(x, window.innerWidth - 280) + 'px';
+  hoverTip.style.top = y + 'px';
+  hoverTip.classList.add('visible');
+}
+
+function hideHoverTip() {
+  hoverTip.classList.remove('visible');
+}
+
+// Wire up hover events to all graph points
+document.querySelectorAll('.graph-point').forEach(pt => {
+  pt.addEventListener('mouseenter', e => showHoverTip(e, parseInt(pt.dataset.story)));
+  pt.addEventListener('mousemove',  e => showHoverTip(e, parseInt(pt.dataset.story)));
+  pt.addEventListener('mouseleave', hideHoverTip);
+});
 </script>
 </body>
 </html>
