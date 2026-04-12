@@ -1,239 +1,520 @@
-"""
-data.py — Overtone Explainability Widget
-=========================================
-PLACEHOLDER DATA — for UI development only.
+# STEP1
+# Open a terminal in VS Code and install all packages: 
+# pip install pandas numpy google-cloud-bigquery google-cloud-bigquery-storage db-dtypes
 
-When BigQuery access is ready, Saketh replaces
-get_stories() with a real BQ query. The shape
-of each story dict must stay the same so the
-UI renders without any other changes.
+# STEP2
+# Install Google Cloud SDK (gcloud):
+# Download from cloud.google.com/sdk/docs/install, run the installer, then in the terminal: 
+# gcloud init
+# gcloud auth application-default login
+# Log in with the Google account that has access to capstone-project-400212.
 
-BigQuery table expected columns:
-  - url             (STRING)
-  - headline        (STRING)
-  - date_published  (DATE)
-  - source_name     (STRING)
-  - recommendation_level (FLOAT)
-  - tone            (STRING)
-  - concepts        (REPEATED STRING or JSON)
-  - brand_mentions  (INTEGER)
-  - sentiment_score (FLOAT)
-"""
+# After STEP 1 AND 2 Run this 
 
-# ── SIGNAL COLOR CLASSES ──────────────────────
-# Maps to st.markdown badge styling in app.py
-GREEN  = "green"
-AMBER  = "amber"
-RED    = "red"
-PURPLE = "purple"
-GREY   = "grey"
+import pandas as pd
+import numpy as np
+from datetime import timedelta
 
+from google.cloud import bigquery
+
+
+BQ_PROJECT        = "capstone-project-400212"
+BQ_DATASET        = "summer2025_chicago"
+BQ_TABLE_RECS     = f"{BQ_PROJECT}.{BQ_DATASET}.v_recommendations_razor_live_affluent"
+BQ_TABLE_AW       = f"{BQ_PROJECT}.{BQ_DATASET}.data_advancedweights_razor_affluence"
+BQ_TABLE_VERDICTS = f"{BQ_PROJECT}.{BQ_DATASET}.verdicts"
+
+client = bigquery.Client(project=BQ_PROJECT)
+# Constants
+
+BASELINE_DAYS = 30
+TREND_DAYS = 7
+MIN_ARTICLES = 5 # min articles for a source to used in signal 5
+NEG_THRESHOLD = -0.01 # min weight to surface a negative concept
+                      # nothing in advancedweights table reaches this
+TONE_COLS = [
+    "happy_average", "funny_average", "informational_average", "na_average",
+    "sad_average", "angry_average", "fearful_average", "hopeful_average",  
+]
+
+TONE_LABELS = {
+    "happy_average": "Happy",
+    "funny_average": "Funny",
+    "informational_average": "Informational",
+    "na_average": "Neutral",
+    "sad_average": "Sad",
+    "angry_average": "Angry",
+    "fearful_average": "Fearful",
+    "hopeful_average": "Hopeful",
+}
+
+BS_COLS = [
+    "brandsafety_id_conspiracy",
+    "brandsafety_id_violence",
+    "brandsafety_id_offensive",
+]
+
+BS_LABELS = {
+    "brandsafety_id_conspiracy": "Conspiracy",
+    "brandsafety_id_violence": "Violence",
+    "brandsafety_id_offensive": "Offensive",
+}
+
+SOURCE_MAP = {
+    # IOL
+    "IOL":                                    "iol.co.za",
+    # The Citizen
+    "The Citizen":                            "citizen.co.za",
+    # BusinessLIVE
+    "BusinessLIVE":                           "businesslive.co.za",
+    # The South African
+    "The South African":                      "thesouthafrican.com",
+    # Moneyweb
+    "Moneyweb":                               "moneyweb.co.za",
+    # Bizcommunity (3 variants)
+    "Bizcommunity":                           "bizcommunity.com",
+    "Bizcommunity.com":                       "bizcommunity.com",
+    # Times LIVE (3 variants)
+    "Times LIVE":                             "timeslive.co.za",
+    "TimesLIVE":                              "timeslive.co.za",
+    # SABC News (2 variants — differs only by escaped apostrophe)
+    "SABC News - Breaking news, special reports, world, business, sport coverage of all South African current events. Africa's news leader.":  "sabcnews.com",
+    "SABC News - Breaking news, special reports, world, business, sport coverage of all South African current events. Africa\\'s news leader.": "sabcnews.com",
+    # Daily Maverick
+    "Daily Maverick":                         "dailymaverick.co.za",
+    # South Africa Today
+    "South Africa Today":                     "southafricatoday.net",
+    # BusinessTech
+    "BusinessTech":                           "businesstech.co.za",
+    # MyBroadband
+    "MyBroadband":                            "mybroadband.co.za",
+    # Engineering News
+    "Engineering News":                       "engineeringnews.co.za",
+    # CapeTown ETC
+    "CapeTown ETC":                           "capetownetc.com",
+    # TechFinancials
+    "TechFinancials":                         "techfinancials.co.za",
+    # TechCentral
+    "TechCentral":                            "techcentral.co.za",
+    # EWN
+    "EWN":                                    "ewn.co.za",
+    "EWN Traffic":                            "ewn.co.za",
+    # eNCA
+    "eNCA":                                   "enca.com",
+    "eNCAnews":                               "enca.com",
+    # Sowetan LIVE
+    "Sowetan LIVE":                           "sowetanlive.co.za",
+    # ITWeb
+    "ITWeb":                                  "itweb.co.za",
+    # 2oceansvibe
+    "2oceansvibe News | South African and international news": "2oceansvibe.com",
+    # SA Cricket
+    "SA Cricket | OPINION | PLAYERS  | TEAMS  | FEATURES  | SAFFAS ABROAD": "sacricketmag.com",
+    # SAPeople
+    "SAPeople - Your Worldwide South African Community": "sapeople.com",
+    # The Mail & Guardian
+    "The Mail & Guardian":                    "mg.co.za",
+    # Stuff
+    "Stuff":                                  "stuff.co.za",
+    # Witness
+    "Witness":                                "witness.co.za",
+    # The Media Online
+    "The Media Online":                       "themediaonline.co.za",
+    # news24
+    "news24":                                 "news24.com",
+    # City Press — no domain variant, keep as is
+    # GroundUp News — no domain variant, keep as is
+}
+
+# Load data
+
+def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """ 
+    Load both source tables, parse dates, and apply source normilization.
+    Normalization for the source names so that all signal funcitons recieve clean data.
+    """
+    recs = client.query(f"SELECT * FROM `{BQ_TABLE_RECS}`").to_dataframe()
+    aw   = client.query(f"SELECT * FROM `{BQ_TABLE_AW}`").to_dataframe()
+
+    recs["datepub"] = pd.to_datetime(recs["datepub"], format="mixed", errors="coerce")
+    recs["source_norm"] = recs["source_name"].replace(SOURCE_MAP)
+
+    return recs, aw
+
+def load_verdicts() -> dict:
+    """
+    Load pre-generated LLM verdicts from BQ verdicts table.
+    Returns a dict keyed by article id for fast lookup in get_stories().
+    Falls back to an empty dict if the table is unavailable so build_verdict()
+    can be used as a fallback without breaking the app.
+    """
+    try:
+        df = client.query(f"SELECT id, verdict FROM `{BQ_TABLE_VERDICTS}`").to_dataframe()
+        return dict(zip(df["id"], df["verdict"]))
+    except Exception as e:
+        print(f"Warning: could not load verdicts table, falling back to build_verdict(). Error: {e}")
+        return {}
+
+def get_reference_date(recs: pd.DataFrame) -> pd.Timestamp:
+    """ 
+    Use the most recent article date as "today". This will keep logic stable against both CSV and live BQ tables.
+    """
+
+    return recs["datepub"].max()
+
+
+# Pre-compute audience-level lookups
+# These are used in multiple signal functions, so we compute them once here and pass them in as needed.
+
+def build_source_profile(recs: pd.DataFrame) -> pd.DataFrame:
+    """ 
+    For each normalized source with MIN_ARTICLES or more articles, compute what % of their output is each 
+    overtone_type.
+    Used by Signal 5 (Source Tone).
+    """
+    source_totals = recs["source_norm"].value_counts()
+    reliable = source_totals[source_totals >= MIN_ARTICLES].index
+    cross_tab = pd.crosstab(recs["source_norm"], recs["overtone_type"])
+    source_type_pct = cross_tab.div(cross_tab.sum(axis=1), axis=0) * 100
+    return source_type_pct.loc[source_type_pct.index.isin(reliable)]
+
+def build_concept_lists(aw: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """ 
+    Split Advanced Weights into positive and negative concept lists.
+    Postive threshold = mean + 1 std dev
+    Negative threshold = NEG_THRESHOLD (currently set to -0.01, which nothing reaches it)
+    Used by signal 3 (Concept Signals).
+    """
+    mean_w = aw["weight"].mean()
+    std_w = aw["weight"].std()
+    threshold = mean_w + std_w
+
+    positive = (
+        aw[aw["weight"] >= threshold]
+        .sort_values("weight", ascending=False)
+        .reset_index(drop=True)
+    )    
+    negative = (
+        aw[aw["weight"] < NEG_THRESHOLD]
+        .sort_values("weight")
+        .reset_index(drop=True)
+    )
+    return positive, negative
+
+
+# Signal 1 - Tone/Trend
+
+def build_tone_signal(article: pd.Series, recs: pd.DataFrame) -> dict:
+    """
+    3 states: 
+    Baseline: tone is typical for this overtone_type in the last 30 days
+    Deviation: tone differs from the 30-day mode for this type
+    Trend: deviation AND the tone has risen >25% relative to the last 7 days
+
+    Windows are anchored to each article's own datepub, with a strict upper
+    bound (< art_date) so an article is never included in its own baseline.
+    """
+    art_date  = article["datepub"]
+    cutoff_30 = art_date - timedelta(days=BASELINE_DAYS)
+    cutoff_7  = art_date - timedelta(days=TREND_DAYS)
+    otype     = article["overtone_type"]
+
+    art_tone_col = article[TONE_COLS].idxmax()
+    art_tone_label = TONE_LABELS[art_tone_col]
+
+    baseline = recs[
+        (recs["overtone_type"] == otype) &
+        (recs["datepub"] >= cutoff_30) &
+        (recs["datepub"] < art_date)
+    ].copy()
+    baseline["_dominant"] = baseline[TONE_COLS].idxmax(axis=1)
+
+    baseline_mode = baseline["_dominant"].mode().iloc[0] if not baseline.empty else None
+    baseline_label = TONE_LABELS.get(baseline_mode, baseline_mode)
+
+    pct_30 = (baseline["_dominant"] == art_tone_col).mean() * 100 if not baseline.empty else 0
+
+    window_7 = recs[
+        (recs["overtone_type"] == otype) &
+        (recs["datepub"] >= cutoff_7) &
+        (recs["datepub"] < art_date)
+    ].copy()
+    window_7["_dominant"] = window_7[TONE_COLS].idxmax(axis=1)
+    pct_7 = (window_7["_dominant"] == art_tone_col).mean() * 100 if not window_7.empty else 0
+
+    is_deviation = (baseline_mode is not None) and (art_tone_col != baseline_mode)
+    is_trending = is_deviation and (pct_7 > pct_30 * 1.25)
+
+    if is_trending:
+        detail = (
+            f"{art_tone_label} tone is rising in the last 7 days "
+            f"({pct_30:.0f}% -> {pct_7:.0f}% of {otype} articles). "
+            f"Typical tone for this type is {baseline_label}."
+        )
+        color = "red"
+    elif is_deviation:
+        detail = (
+            f"{art_tone_label} tone is unusual for {otype} content "
+            f"in the last 30 days (typical: {baseline_label})."
+        )
+        color = "amber"
+    else:
+        detail = (
+            f"{art_tone_label} tone is typical for {otype} content "
+            f"in the last 30 days."
+        )
+        color = "grey"
+    return {
+        "name": "Tone",
+        "detail": detail,
+        "badge": art_tone_label,
+        "color": color,
+
+    }
+
+
+#Signal 2 - Brand Safety
+
+def build_brand_safety_signal(article: pd.Series) -> dict:
+    """
+    Checks all 3 brand safety columns.
+    Shows ALL active flags, not just the worst one. 
+    Green when clean, red when any flag is present.
+    """
+    flags = []
+    for col in BS_COLS:
+        val = article[col]
+        if val != "No Risk":
+            flags.append(f"{BS_LABELS[col]}: {val}")
+
+    if flags:
+        detail = "Brand safety flags detected: " + " · ".join(flags) + "."
+        badge = f"{len(flags)} flag{'s' if len(flags) > 1 else ''}"
+        color = "red"
+    else:
+        detail = "No brand safety flags detected."
+        badge = "No flags"
+        color = "green"
+    return {
+        "name": "Brand Safety",
+        "detail": detail,
+        "badge": badge,
+        "color": color,
+    }
+
+
+# Signal 3 - AdvancedWeight Concept Signals
+
+
+def build_concept_signal(positive_concepts: pd.DataFrame,
+                         negative_concepts: pd.DataFrame) -> dict:
+    """
+    Audience-level signal: not per article for now.
+    Shows top 3 high-weight concepts for this audience.
+    Negative concepts are currently not surfaced due to low weights, 
+    but logic is in place to show them if they reach the NEG_THRESHOLD.
+    """
+    top3 = positive_concepts.head(3)
+    pos_list = ", ".join(top3["category"].tolist())
+    detail = f"Top positive concepts: {pos_list}."
+
+    if not negative_concepts.empty:
+        neg_list = ", ".join(negative_concepts.head(3)["category"].tolist())
+        detail += f" Avoid: {neg_list}."
+
+    top = top3.iloc[0]
+    badge = f"{top['category']} ({top['weight_level'].replace(' Positive', '')})"
+
+    return {
+        "name": "Audience Concepts",
+        "detail": detail,
+        "badge": badge,
+        "color": "purple",
+    }
+
+
+# Signal 4 - Predicted Performance
+
+def build_performance_signal(article: pd.Series, recs: pd.DataFrame) -> dict:
+    """
+    Compares this article's predicted_performance to the 30 day baseline.
+    Expressed as a percentile rank, more readable than raw values for a PR audience.
+
+    Window is anchored to each article's own datepub, with a strict upper
+    bound (< art_date) so an article is never included in its own baseline.
+    Returns a grey "No baseline" signal if fewer than MIN_ARTICLES exist in the window.
+    """
+    art_date  = article["datepub"]
+    cutoff_30 = art_date - timedelta(days=BASELINE_DAYS)
+    baseline  = recs[
+        (recs["datepub"] >= cutoff_30) &
+        (recs["datepub"] < art_date)
+    ]["predicted_performance"]
+
+    if len(baseline) < MIN_ARTICLES:
+        return {
+            "name":   "Predicted Performance",
+            "detail": "Not enough recent articles to compute a baseline.",
+            "badge":  "No baseline",
+            "color":  "grey",
+        }
+
+    score = article["predicted_performance"]
+    percentile = (baseline < score).mean() * 100
+
+    if percentile >= 90:
+        detail = f"Predicted performance is in the top {100 - percentile:.0f}% of articles in the last 30 days."
+        badge = f"Top {100 - percentile:.0f}%"
+        color = "green"
+    elif percentile >= 75:
+        detail = f"Predicted performance above average for the last 30 days ({percentile:.0f}th percentile)."
+        badge  = f"{percentile:.0f}th percentile"
+        color  = "green"
+    elif percentile >= 40:
+        detail = f"Predicted performance is typical for the last 30 days ({percentile:.0f}th percentile)."
+        badge  = f"{percentile:.0f}th percentile"
+        color  = "grey"
+    else:
+        detail = f"Predicted performance below average for the last 30 days ({percentile:.0f}th percentile)."
+        badge  = f"{percentile:.0f}th percentile"
+        color  = "red"
+
+    return {
+        "name": "Predicted Performance",
+        "detail": detail,
+        "badge": badge,
+        "color": color,
+    }
+
+
+# Signal 5 - Source Tone 
+
+def build_source_signal(article: pd.Series,
+                        source_profile: pd.DataFrame) -> dict:
+    """
+    Returns a short sentence about whether this source typically covers
+    this type of content. Folded into verdict rather than a signals slot
+    so the 4-slot schema doesn't need to change for v1.
+ 
+    Three states:
+      Unusual: source covers this type <10% of the time → amber flag
+      Typical:source covers this type >50% of the time → noted
+      (silent): anything in between is not worth flagging
+    """
+    src = article["source_norm"]
+    otype = article["overtone_type"]
+
+    if src not in source_profile.index or otype not in source_profile.columns:
+        return ""
+    
+    pct = source_profile.loc[src, otype]
+    dom_type = source_profile.loc[src].idxmax()
+    dom_pct = source_profile.loc[src].max()
+
+    if pct < 10:
+        return(
+            f"{src} rarely publishes {otype} content "
+            f"({pct:.0f}% of their articles, they mostly cover {dom_type} at {dom_pct:.0f}%)"
+        )
+    elif pct >= 50:
+        return(
+            f"{src} commonly publishes {otype} content "
+            f"({pct:.0f}% of their articles)."
+        )
+    return ""
+
+
+
+# Verdict Logic
+
+def build_verdict(article: pd.Series, signals: list[dict],
+                  source_sentence: str) -> str:
+    """
+    1-3 sentence plain-language summary for the tooltip.
+    Leads with the most notable signal, appends source context if present.
+    Falls back to tone detail if nothing notable fires.
+    """
+    parts = []
+ 
+    tone_sig = next((s for s in signals if s["name"] == "Tone"), None)
+    if tone_sig and tone_sig["color"] in ("red", "amber"):
+        parts.append(tone_sig["detail"])
+ 
+    bs_sig = next((s for s in signals if s["name"] == "Brand Safety"), None)
+    if bs_sig and bs_sig["color"] == "red":
+        parts.append(bs_sig["detail"])
+ 
+    perf_sig = next((s for s in signals if s["name"] == "Predicted Performance"), None)
+    if perf_sig and perf_sig["color"] in ("green", "red"):
+        parts.append(perf_sig["detail"])
+ 
+    if source_sentence:
+        parts.append(source_sentence)
+ 
+    # Fallback: tone detail is always present
+    if not parts and tone_sig:
+        parts.append(tone_sig["detail"])
+ 
+    return " ".join(parts)
+
+# Main Entry Point
 
 def get_stories() -> list[dict]:
     """
-    Returns a list of story dicts for the widget.
-
-    TO REPLACE WITH BIGQUERY:
-    ─────────────────────────
-    from google.cloud import bigquery
-    client = bigquery.Client()
-    query = \"\"\"
-        SELECT
-            url, headline, date_published, source_name,
-            recommendation_level, tone, brand_mentions,
-            concepts, sentiment_score
-        FROM `your_project.overtone_dataset.stories`
-        WHERE brand = 'Coca-Cola'
-          AND market = 'Japan'
-          AND date_published BETWEEN '2026-01-25' AND '2026-02-11'
-        ORDER BY recommendation_level DESC
-        LIMIT 50
-    \"\"\"
-    rows = client.query(query).result()
-    return [build_story_dict(row) for row in rows]
+    Called by app.py.
+    Returns a list of story dicts, unsorted for now pending relevance score
+    validation with the team.
+    Verdict is looked up from the pre-generated BQ verdicts table by article id.
+    Falls back to build_verdict() for any article not found in the verdicts table.
     """
+    recs, aw  = load_data()
+    verdicts  = load_verdicts()
+ 
+    source_profile                       = build_source_profile(recs)
+    positive_concepts, negative_concepts = build_concept_lists(aw)
+    concept_signal                       = build_concept_signal(positive_concepts, negative_concepts)
+ 
+    stories = []
+ 
+    for _, article in recs.iterrows():
+        tone_signal     = build_tone_signal(article, recs)
+        bs_signal       = build_brand_safety_signal(article)
+        perf_signal     = build_performance_signal(article, recs)
+        source_sentence = build_source_signal(article, source_profile)
 
-    return [
-        {
-            "id": 0,
-            "headline": "Coca-Cola's ¥100M Japan marketing push: inside the summer strategy",
-            "source": "Campaign Asia",
-            "date": "3 févr. 2026",
-            "url": "https://campaignasia.com/coca-cola-japan-summer-strategy",
-            "score": 0.0999,
-            "verdict": (
-                "**Highest-scoring story this period.** Coca-Cola is the primary subject — "
-                "strategy coverage that signals market-wide attention. Audience is marketing "
-                "professionals watching how Coke moves in Japan ahead of summer."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Primary subject — named throughout",                    "badge": "9 direct",   "color": GREEN},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Analytical — strategy coverage, neutral-positive",       "badge": "Positive",   "color": GREEN},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Japan Marketing, Summer Campaign, Brand Strategy, Spend","badge": "4 matched",  "color": GREEN},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "Marketing professionals and brand competitors watching", "badge": "Very strong","color": GREEN},
-            ],
-            "concepts": ["Japan Campaign", "Marketing Strategy", "Summer", "Brand Spend", "Coca-Cola"],
-            "matched":  ["Japan Campaign", "Marketing Strategy", "Summer", "Brand Spend", "Coca-Cola"],
-        },
-        {
-            "id": 1,
-            "headline": "Summer Sonic 2026 lineup announced — fans react across social and news",
-            "source": "Billboard Japan",
-            "date": "25 janv. 2026",
-            "url": "https://billboardjapan.com/summer-sonic-2026-lineup",
-            "score": 0.0921,
-            "verdict": (
-                "**High-relevance cultural moment.** Summer Sonic is one of Japan's largest "
-                "music festivals — exactly the type of event Philip flagged. Audience sentiment "
-                "is excited and highly engaged. Strong alignment with Coca-Cola's youth and "
-                "lifestyle positioning."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Coca-Cola named as returning festival sponsor",         "badge": "3 direct",   "color": GREEN},
-                {"icon": "🌡️", "name": "Tone",             "detail": "High excitement — anticipation and buzz",               "badge": "Positive",   "color": GREEN},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Music Festival, Youth Culture, Sponsorship, Summer",    "badge": "4 matched",  "color": GREEN},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "18–34 Japanese consumers — core target demographic",    "badge": "Very strong","color": GREEN},
-            ],
-            "concepts": ["Music Festival", "Summer Sonic", "Youth Culture", "Sponsorship", "Summer", "Live Events"],
-            "matched":  ["Music Festival", "Youth Culture", "Sponsorship", "Summer"],
-        },
-        {
-            "id": 2,
-            "headline": "Pepsi Japan refreshes identity ahead of summer — new packaging and celeb tie-in",
-            "source": "Ad Age Asia",
-            "date": "9 févr. 2026",
-            "url": "https://adage.com/asia/pepsi-japan-summer-campaign",
-            "score": 0.0867,
-            "verdict": (
-                "**Direct competitor activation.** Pepsi is moving aggressively in the same "
-                "market window Coca-Cola is targeting. High strategic relevance — this story "
-                "directly affects campaign positioning decisions."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Pepsi primary, Coca-Cola named as competitive benchmark","badge": "2 indirect", "color": AMBER},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Competitive — challenger brand energy",                 "badge": "Neutral",    "color": AMBER},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Pepsi, Competitor, Japan, Summer, Celebrity",           "badge": "4 matched",  "color": GREEN},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "Beverage consumers + marketing observers — high overlap","badge": "Strong",    "color": GREEN},
-            ],
-            "concepts": ["Pepsi Japan", "Competitor", "Summer Campaign", "Celebrity", "Brand Identity"],
-            "matched":  ["Competitor", "Summer Campaign", "Brand Identity"],
-        },
-        {
-            "id": 3,
-            "headline": "Japan's Gen Z is drinking less soda — health trends reshape beverage market",
-            "source": "Toyo Keizai",
-            "date": "26 janv. 2026",
-            "url": "https://toyokeizai.net/articles/beverage-genz-japan",
-            "score": 0.0812,
-            "verdict": (
-                "**Risk signal requiring attention.** Category-level threat — declining soda "
-                "consumption among Coca-Cola's core demographic in Japan. Directly relevant "
-                "to campaign timing and messaging strategy."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Coca-Cola cited as category leader at risk",            "badge": "2 direct",   "color": AMBER},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Cautionary — market shift, health-first framing",       "badge": "Negative",   "color": RED},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Beverage Market, Gen Z, Health Trends, Japan",          "badge": "4 matched",  "color": GREEN},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "Business press + Gen Z consumers — dual audience hit",  "badge": "Strong",     "color": GREEN},
-            ],
-            "concepts": ["Gen Z Japan", "Health Trends", "Beverage Market", "Soda Decline", "Consumer Shift"],
-            "matched":  ["Gen Z Japan", "Health Trends", "Beverage Market", "Consumer Shift"],
-        },
-        {
-            "id": 4,
-            "headline": "Tokyo Olympics legacy: how sport sponsorships changed brand perception in Japan",
-            "source": "Dentsu Insights",
-            "date": "2 févr. 2026",
-            "url": "https://dentsu.com/insights/olympics-sponsorship-japan",
-            "score": 0.0612,
-            "verdict": (
-                "Moderate relevance — **sponsorship ROI framing** relevant to Coca-Cola's "
-                "ongoing sports and events strategy in Japan. No current campaign mention, "
-                "but thematic alignment with brand values is strong."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Named as Olympics sponsor in historical context",       "badge": "1 indirect", "color": AMBER},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Analytical — retrospective, evidence-based",            "badge": "Neutral",    "color": GREY},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Sponsorship ROI, Sports, Japan Brand Perception",       "badge": "3 matched",  "color": PURPLE},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "Brand strategists and agency professionals",            "badge": "Moderate",   "color": AMBER},
-            ],
-            "concepts": ["Olympics", "Sponsorship ROI", "Sports Marketing", "Japan", "Brand Perception"],
-            "matched":  ["Sponsorship ROI", "Sports Marketing", "Japan"],
-        },
-        {
-            "id": 5,
-            "headline": "DJ Snake confirms Tokyo and Osaka dates — biggest Asia tour yet",
-            "source": "Consequence of Sound",
-            "date": "30 janv. 2026",
-            "url": "https://consequenceofsound.net/dj-snake-japan-tour",
-            "score": 0.0543,
-            "verdict": (
-                "Moderate relevance — **DJ alignment opportunity.** Philip specifically "
-                "mentioned DJ culture as a potential brand alignment vector in Japan. "
-                "No brand mention, but DJ Snake's audience maps closely to Coca-Cola's "
-                "18–29 youth target."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Not mentioned — opportunity signal",                   "badge": "0 direct",   "color": GREY},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Excited — tour announcement buzz",                     "badge": "Positive",   "color": GREEN},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "DJ Culture, Live Events, Youth Audience, Japan Tour",  "badge": "3 matched",  "color": PURPLE},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "18–29 Japanese concert-goers — high overlap",          "badge": "Moderate",   "color": AMBER},
-            ],
-            "concepts": ["DJ Snake", "Tokyo", "Osaka", "Live Events", "DJ Culture", "Asia Tour"],
-            "matched":  ["Live Events", "DJ Culture"],
-        },
-        {
-            "id": 6,
-            "headline": "Nike x Pharrell Japan collection sells out in 12 minutes — what brands can learn",
-            "source": "Nikkei Marketing",
-            "date": "27 janv. 2026",
-            "url": "https://nikkei.com/marketing/nike-pharrell-japan",
-            "score": 0.0478,
-            "verdict": (
-                "Indirect relevance — **competitor brand alignment signal.** Nike and Pharrell's "
-                "Japan launch dominated youth conversation this week. Coca-Cola not mentioned, "
-                "but the audience overlap and cultural moment type match tracked campaign targets."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Not mentioned — competitor brand story",               "badge": "0 direct",   "color": GREY},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Aspirational — hype and cultural cachet",              "badge": "Positive",   "color": GREEN},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Sneaker Culture, Youth Spending, Brand Alignment",     "badge": "3 matched",  "color": PURPLE},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "Streetwear / youth audience — overlaps with Coke target","badge": "Moderate", "color": AMBER},
-            ],
-            "concepts": ["Sneaker Culture", "Nike", "Pharrell", "Youth Spending", "Brand Alignment", "Japan"],
-            "matched":  ["Youth Spending", "Brand Alignment"],
-        },
-        {
-            "id": 7,
-            "headline": "Japan vending machine sales hit record high — convenience culture drives growth",
-            "source": "Japan Times",
-            "date": "4 févr. 2026",
-            "url": "https://japantimes.co.jp/business/vending-machine-record",
-            "score": 0.0334,
-            "verdict": (
-                "Low-moderate relevance. **Distribution channel signal** — vending machines "
-                "are Coca-Cola's dominant Japan sales channel. Story doesn't mention the brand "
-                "but has indirect strategic value for channel planning."
-            ),
-            "signals": [
-                {"icon": "🎯", "name": "Brand Mentions",   "detail": "Not mentioned by name",                                "badge": "0 direct",   "color": GREY},
-                {"icon": "🌡️", "name": "Tone",             "detail": "Positive — growth and consumer convenience",           "badge": "Positive",   "color": GREEN},
-                {"icon": "📌", "name": "Concept Matches",  "detail": "Vending Machines, Japan Retail, Beverage Distribution","badge": "2 matched",  "color": PURPLE},
-                {"icon": "👥", "name": "Audience Fit",     "detail": "General Japan consumer press — broad but shallow",     "badge": "Weak",       "color": GREY},
-            ],
-            "concepts": ["Vending Machines", "Japan Retail", "Convenience", "Beverage Sales", "Distribution"],
-            "matched":  ["Japan Retail", "Beverage Sales"],
-        },
-    ]
+        signals = [tone_signal, bs_signal, concept_signal, perf_signal]
+
+        # Use LLM verdict from BQ if available, fall back to rule-based build_verdict()
+        verdict = verdicts.get(article["id"]) or build_verdict(article, signals, source_sentence)
+ 
+        date_str = article["datepub"].strftime("%-d %b %Y") if pd.notna(article["datepub"]) else ""
+ 
+        stories.append({
+            "id":       article["id"],
+            "headline": article["headline"],
+            "source":   article["source_norm"],
+            "date":     date_str,
+            "url":      article["url"],
+            "verdict":  verdict,
+            "signals":  signals,
+        })
+ 
+    return stories
 
 
-def score_to_label(score: float) -> tuple[str, str]:
-    """Returns (label, color_hex) for a given recommendation_level score."""
-    if score >= 0.08:
-        return "Very High", "#1a7a4a"
-    elif score >= 0.06:
-        return "High", "#2a5a3a"
-    elif score >= 0.04:
-        return "Moderate", "#8a6000"
-    else:
-        return "Low", "#888"
+# Quick Test:
+
+if __name__ == "__main__":
+    stories = get_stories()
+
+    print(f"Total stories: {len(stories)}")
+    print()
+
+    for s in stories[:8]:
+        print(f"{s['headline'][:70]}")
+        print(f"  Source:  {s['source']}")
+        print(f"  Verdict: {s['verdict'][:120]}")
+        print(f"  Signals:")
+        for sig in s["signals"]:
+            print(f"    {sig['name']:25} {sig['badge']:30} {sig['color']}")
+        print()
