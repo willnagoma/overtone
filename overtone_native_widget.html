@@ -146,6 +146,50 @@
   .popup-concepts { padding: 0 16px 12px; display: flex; flex-wrap: wrap; gap: 5px; }
   .concept-pill { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-secondary); }
   .concept-pill.matched { background: var(--purple-light); border-color: var(--purple-border); color: var(--purple-dark); font-weight: 500; }
+
+  /* ── LIGHTWEIGHT SIGNAL BADGES (main popup) ── */
+  .signal-badges-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 14px; }
+  .signal-badge-pill { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface-2); font-size: 11px; cursor: default; }
+  .signal-badge-pill.pill-green  { background: var(--green-bg);    border-color: rgba(26,138,82,0.3);    color: #1a7a4a; }
+  .signal-badge-pill.pill-amber  { background: var(--amber-bg);    border-color: rgba(138,96,0,0.3);     color: #8a6000; }
+  .signal-badge-pill.pill-red    { background: var(--red-bg);      border-color: rgba(192,57,43,0.3);    color: #c0392b; }
+  .signal-badge-pill.pill-purple { background: var(--purple-light); border-color: var(--purple-border);  color: var(--purple-dark); }
+  .signal-badge-pill.pill-grey   { background: var(--surface-2);   border-color: var(--border);          color: var(--text-muted); }
+  .sbp-icon { font-size: 12px; }
+  .sbp-name { font-size: 10px; opacity: 0.7; }
+  .sbp-val  { font-size: 11px; font-weight: 600; }
+
+  /* ── DEEPDIVE PANEL ── */
+  .deepdive-panel { position: absolute; width: 400px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: var(--radius); box-shadow: var(--shadow-popup); pointer-events: all; opacity: 0; transform: translateX(8px) scale(0.985); transition: opacity 0.18s ease, transform 0.18s ease; z-index: 600; overflow: hidden; display: none; }
+  .deepdive-panel.visible { opacity: 1; transform: translateX(0) scale(1); display: block; }
+  .dd-stripe { background: #1a1a2e; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .dd-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+  .dd-back { background: rgba(255,255,255,0.12); border: none; border-radius: 12px; padding: 3px 10px; font-family: 'Inter', sans-serif; font-size: 11px; color: rgba(255,255,255,0.75); cursor: pointer; }
+  .dd-back:hover { background: rgba(255,255,255,0.22); }
+  .dd-head { padding: 12px 16px 8px; border-bottom: 1px solid var(--border); }
+  .dd-source { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .dd-headline { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .dd-signals { padding: 12px 16px 8px; }
+  .dd-signals-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .dd-footer { padding: 10px 16px 14px; border-top: 1px solid var(--border); background: var(--surface-2); }
+
+  /* ── FEEDBACK FORM ── */
+  .popup-feedback { display: none; padding: 14px 16px 0; }
+  .popup-feedback.active { display: block; }
+  .feedback-title { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .feedback-field { margin-bottom: 9px; }
+  .feedback-label { font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .feedback-computer { font-size: 10px; color: var(--text-muted); font-style: italic; margin-bottom: 4px; }
+  .feedback-select { width: 100%; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 28px 6px 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239898b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .feedback-select:focus { outline: none; border-color: var(--purple); }
+  .feedback-actions { display: flex; gap: 8px; padding: 12px 0 14px; }
+  .feedback-confirmation { display: none; text-align: center; padding: 28px 16px 24px; }
+  .feedback-confirmation.active { display: block; }
+  .feedback-check { font-size: 30px; margin-bottom: 8px; }
+  .feedback-confirm-msg { font-size: 13px; font-weight: 500; color: var(--green); margin-bottom: 4px; }
+  .feedback-confirm-sub { font-size: 11px; color: var(--text-muted); }
+  .concept-pill { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-secondary); }
+  .concept-pill.matched { background: var(--purple-light); border-color: var(--purple-border); color: var(--purple-dark); font-weight: 500; }
   .popup-footer { display: flex; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--border); background: var(--surface-2); }
   .pfooter-btn { flex: 1; padding: 7px 10px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; border: 1px solid var(--border-mid); background: var(--surface); color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; justify-content: center; }
   .pfooter-btn:hover { background: var(--border); color: var(--text-primary); }
@@ -378,30 +422,119 @@
 </div>
 
 <div class="popup-overlay" id="popup-overlay">
+
+  <!-- MAIN POPUP -->
   <div class="popup" id="popup">
     <div class="popup-caret" id="popup-caret"></div>
-    <div class="popup-stripe">
-      <div class="popup-stripe-left">
-        <span class="popup-why-label">Why this score</span>
-        <span class="popup-score-badge" id="pop-score"></span>
+
+    <!-- Normal view -->
+    <div id="popup-normal-view">
+      <div class="popup-stripe">
+        <div class="popup-stripe-left">
+          <span class="popup-why-label">Why this score</span>
+          <span class="popup-score-badge" id="pop-score"></span>
+        </div>
+        <button class="popup-close" onclick="closePopup()">✕</button>
       </div>
-      <button class="popup-close" onclick="closePopup()">✕</button>
+      <div class="popup-head">
+        <div class="popup-source" id="pop-source"></div>
+        <div class="popup-headline" id="pop-headline"></div>
+      </div>
+      <div class="popup-verdict" id="pop-verdict"></div>
+      <div class="signal-badges-row" id="pop-badges"></div>
+      <div class="popup-footer">
+        <button class="pfooter-btn primary" onclick="openDeepdive()">Article Deepdive →</button>
+        <button class="pfooter-btn" onclick="showFeedbackForm()">Did we get it wrong?</button>
+      </div>
     </div>
-    <div class="popup-head">
-      <div class="popup-source" id="pop-source"></div>
-      <div class="popup-headline" id="pop-headline"></div>
+
+    <!-- Feedback form view -->
+    <div class="popup-feedback" id="popup-feedback-view">
+      <div class="popup-stripe">
+        <div class="popup-stripe-left">
+          <span class="popup-why-label">Submit a correction</span>
+        </div>
+        <button class="popup-close" onclick="hideFeedbackForm()">✕</button>
+      </div>
+      <div style="padding: 14px 16px 0;">
+        <div class="feedback-title">What do you think we got wrong?</div>
+
+        <div class="feedback-field">
+          <div class="feedback-label">🌡️ Tone</div>
+          <div class="feedback-computer" id="fb-tone-computer"></div>
+          <select class="feedback-select" id="fb-tone-select">
+            <option value="">— select correct tone —</option>
+            <option>Informational</option>
+            <option>Happy</option>
+            <option>Angry</option>
+            <option>Sad</option>
+            <option>Fearful</option>
+            <option>Hopeful</option>
+            <option>Funny</option>
+            <option>Neutral</option>
+          </select>
+        </div>
+
+        <div class="feedback-field">
+          <div class="feedback-label">🛡️ Brand Safety</div>
+          <div class="feedback-computer" id="fb-safety-computer"></div>
+          <select class="feedback-select" id="fb-safety-select">
+            <option value="">— select correct risk level —</option>
+            <option>No Risk</option>
+            <option>Low Risk</option>
+            <option>Medium Risk</option>
+            <option>High Risk</option>
+          </select>
+        </div>
+
+        <div class="feedback-field">
+          <div class="feedback-label">📈 Predicted Performance</div>
+          <div class="feedback-computer" id="fb-perf-computer"></div>
+          <select class="feedback-select" id="fb-perf-select">
+            <option value="">— select correct assessment —</option>
+            <option>Top performer</option>
+            <option>Above average</option>
+            <option>Average</option>
+            <option>Below average</option>
+          </select>
+        </div>
+
+        <div class="feedback-actions">
+          <button class="pfooter-btn primary" onclick="submitFeedback()">Submit correction</button>
+          <button class="pfooter-btn" onclick="hideFeedbackForm()">Cancel</button>
+        </div>
+      </div>
     </div>
-    <div class="popup-verdict" id="pop-verdict"></div>
-    <div class="popup-signals">
-      <div class="signals-title">Scoring signals</div>
-      <div id="pop-signals"></div>
+
+    <!-- Confirmation view -->
+    <div class="feedback-confirmation" id="popup-confirmation-view">
+      <div class="feedback-check">✓</div>
+      <div class="feedback-confirm-msg">Feedback recorded</div>
+      <div class="feedback-confirm-sub">Thank you — this helps improve our signal accuracy.</div>
     </div>
-    <div class="popup-concepts" id="pop-concepts"></div>
-    <div class="popup-footer">
-      <a class="pfooter-btn primary" id="pop-deepdive" href="#" target="_blank">Article Deepdive →</a>
-      <button class="pfooter-btn" onclick="closePopup()">Did we get it wrong?</button>
+
+  </div>
+
+  <!-- DEEPDIVE PANEL -->
+  <div class="deepdive-panel" id="deepdive-panel">
+    <div class="dd-stripe">
+      <span class="dd-title">Article Deepdive</span>
+      <button class="dd-back" onclick="closeDeepdive()">← Back</button>
+    </div>
+    <div class="dd-head">
+      <div class="dd-source" id="dd-source"></div>
+      <div class="dd-headline" id="dd-headline"></div>
+    </div>
+    <div class="dd-signals">
+      <div class="dd-signals-label">Scoring signals</div>
+      <div id="dd-signals"></div>
+    </div>
+    <div class="popup-concepts" id="dd-concepts"></div>
+    <div class="dd-footer">
+      <a class="pfooter-btn primary" id="dd-article-link" href="#" target="_blank">Read full article →</a>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -409,29 +542,26 @@ const stories = [{"id": 0, "headline": "Standard Bank closes in on most valuable
 
 let activeId = null, activeSrc = null;
 
+// ── POPUP ────────────────────────────────────────
 function openPopup(id, anchorEl, src) {
   const s = stories.find(x => x.id === id);
   activeId = id; activeSrc = src;
+  closeDeepdive();
+  hideFeedbackForm();
+
   document.getElementById('pop-score').textContent = s.score.toFixed(7);
   document.getElementById('pop-source').textContent = s.source + ' · ' + s.date;
   document.getElementById('pop-headline').textContent = s.headline;
   document.getElementById('pop-verdict').textContent = s.verdict;
-  document.getElementById('pop-deepdive').href = s.url;
 
-  document.getElementById('pop-signals').innerHTML = s.signals.map(sig => `
-    <div class="signal-row-item">
-      <span class="sig-icon">${sig.icon}</span>
-      <div class="sig-text">
-        <div class="sig-name">${sig.name}</div>
-        <div class="sig-detail">${sig.detail}</div>
-      </div>
-      <span class="sig-badge badge-${sig.color}">${sig.badge}</span>
+  // Lightweight signal badges
+  document.getElementById('pop-badges').innerHTML = s.signals.map(sig => `
+    <div class="signal-badge-pill pill-${sig.color}">
+      <span class="sbp-icon">${sig.icon}</span>
+      <span class="sbp-name">${sig.name}</span>
+      <span class="sbp-val">${sig.badge}</span>
     </div>
   `).join('');
-
-  document.getElementById('pop-concepts').innerHTML = s.concepts.length
-    ? s.concepts.map(c => `<span class="concept-pill ${s.matched.includes(c)?'matched':''}">${c}</span>`).join('')
-    : '';
 
   const popup = document.getElementById('popup');
   popup.className = 'popup';
@@ -442,13 +572,13 @@ function openPopup(id, anchorEl, src) {
 function positionPopup(popup, anchor) {
   const ov = document.getElementById('popup-overlay').getBoundingClientRect();
   const an = anchor.getBoundingClientRect();
-  const W = 360, GAP = 10, estH = 460;
+  const W = 360, GAP = 10, estH = 340;
   let left = an.left - ov.left;
   if (left + W > ov.width - 8) left = ov.width - W - 8;
   if (left < 8) left = 8;
-  let top, caretBottom = false;
+  let top;
   if (an.top - estH - GAP > 60) { top = an.top - ov.top - estH - GAP; }
-  else { top = an.bottom - ov.top + GAP; caretBottom = true; popup.classList.add('caret-bottom'); }
+  else { top = an.bottom - ov.top + GAP; popup.classList.add('caret-bottom'); }
   popup.style.left = left + 'px';
   popup.style.top = top + 'px';
   const caretLeft = Math.max(16, Math.min(W - 30, an.left - ov.left - left + an.width/2 - 6));
@@ -457,6 +587,8 @@ function positionPopup(popup, anchor) {
 
 function closePopup() {
   document.getElementById('popup').classList.remove('visible');
+  closeDeepdive();
+  hideFeedbackForm();
   document.querySelectorAll('.table-row.active, .graph-point.active').forEach(el => el.classList.remove('active'));
   activeId = null;
 }
@@ -484,15 +616,116 @@ function triggerGraph(e, id) {
 }
 
 document.addEventListener('click', e => {
-  if (activeId !== null && !document.getElementById('popup').contains(e.target)) closePopup();
+  const popup = document.getElementById('popup');
+  const ddPanel = document.getElementById('deepdive-panel');
+  if (activeId !== null
+    && !popup.contains(e.target)
+    && !ddPanel.contains(e.target)) closePopup();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
 
-/* ── HOVER TOOLTIP LOGIC ── */
+// ── DEEPDIVE PANEL ───────────────────────────────
+function openDeepdive() {
+  const s = stories.find(x => x.id === activeId);
+  if (!s) return;
+
+  document.getElementById('dd-source').textContent = s.source + ' · ' + s.date;
+  document.getElementById('dd-headline').textContent = s.headline;
+  document.getElementById('dd-article-link').href = s.url;
+
+  document.getElementById('dd-signals').innerHTML = s.signals.map(sig => `
+    <div class="signal-row-item">
+      <span class="sig-icon">${sig.icon}</span>
+      <div class="sig-text">
+        <div class="sig-name">${sig.name}</div>
+        <div class="sig-detail">${sig.detail}</div>
+      </div>
+      <span class="sig-badge badge-${sig.color}">${sig.badge}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('dd-concepts').innerHTML = s.concepts.length
+    ? s.concepts.map(c => `<span class="concept-pill ${s.matched.includes(c)?'matched':''}">${c}</span>`).join('')
+    : '';
+
+  const popup = document.getElementById('popup');
+  const popupRect = popup.getBoundingClientRect();
+  const ov = document.getElementById('popup-overlay').getBoundingClientRect();
+  const panel = document.getElementById('deepdive-panel');
+  const W = 400;
+
+  let left = popupRect.right - ov.left + 12;
+  if (left + W > ov.width - 8) left = popupRect.left - ov.left - W - 12;
+  if (left < 8) left = 8;
+
+  panel.style.left = left + 'px';
+  panel.style.top  = popup.style.top;
+  panel.style.display = 'block';
+  requestAnimationFrame(() => panel.classList.add('visible'));
+}
+
+function closeDeepdive() {
+  const panel = document.getElementById('deepdive-panel');
+  panel.classList.remove('visible');
+  setTimeout(() => { if (!panel.classList.contains('visible')) panel.style.display = 'none'; }, 180);
+}
+
+// ── FEEDBACK FORM ────────────────────────────────
+function showFeedbackForm() {
+  const s = stories.find(x => x.id === activeId);
+  if (!s) return;
+
+  // Pre-fill "computer says" labels
+  const tone = s.signals.find(sg => sg.name === 'Tone');
+  const safety = s.signals.find(sg => sg.name === 'Brand Safety');
+  const perf = s.signals.find(sg => sg.name === 'Predicted Performance');
+
+  document.getElementById('fb-tone-computer').textContent   = tone   ? 'Computer says: ' + tone.badge   : '';
+  document.getElementById('fb-safety-computer').textContent = safety ? 'Computer says: ' + safety.badge : '';
+  document.getElementById('fb-perf-computer').textContent   = perf   ? 'Computer says: ' + perf.badge   : '';
+
+  // Reset selects
+  ['fb-tone-select','fb-safety-select','fb-perf-select'].forEach(id => {
+    document.getElementById(id).selectedIndex = 0;
+  });
+
+  document.getElementById('popup-normal-view').style.display = 'none';
+  document.getElementById('popup-confirmation-view').classList.remove('active');
+  document.getElementById('popup-feedback-view').classList.add('active');
+}
+
+function hideFeedbackForm() {
+  document.getElementById('popup-feedback-view').classList.remove('active');
+  document.getElementById('popup-confirmation-view').classList.remove('active');
+  document.getElementById('popup-normal-view').style.display = 'block';
+}
+
+function submitFeedback() {
+  const s = stories.find(x => x.id === activeId);
+  const feedback = {
+    article_id:    s ? s.id : null,
+    submitted_at:  new Date().toISOString(),
+    tone_computer: document.getElementById('fb-tone-computer').textContent.replace('Computer says: ',''),
+    tone_human:    document.getElementById('fb-tone-select').value,
+    safety_computer: document.getElementById('fb-safety-computer').textContent.replace('Computer says: ',''),
+    safety_human:  document.getElementById('fb-safety-select').value,
+    perf_computer: document.getElementById('fb-perf-computer').textContent.replace('Computer says: ',''),
+    perf_human:    document.getElementById('fb-perf-select').value,
+  };
+  // Log for now — BQ write-back is a backend step
+  console.log('Feedback submitted:', feedback);
+
+  document.getElementById('popup-feedback-view').classList.remove('active');
+  document.getElementById('popup-confirmation-view').classList.add('active');
+
+  // Auto-return to normal view after 2.5 seconds
+  setTimeout(() => hideFeedbackForm(), 2500);
+}
+
+// ── HOVER TOOLTIP ────────────────────────────────
 const hoverTip = document.getElementById('hover-tip');
 
 function getMostNotableSignal(s) {
-  // Priority: red → amber → green notable → purple → grey
   const priority = ['red','amber','green','purple','grey'];
   for (const color of priority) {
     const sig = s.signals.find(sg => sg.color === color);
@@ -504,25 +737,17 @@ function getMostNotableSignal(s) {
 function showHoverTip(e, id) {
   const s = stories.find(x => x.id === id);
   const sig = getMostNotableSignal(s);
-
   document.getElementById('ht-headline').textContent = s.headline;
   document.getElementById('ht-score').textContent = 'Audience relevance score: ' + s.score.toFixed(4);
   document.getElementById('ht-signal').innerHTML =
     `<span class="hover-tip-signal ${sig.color}">${sig.icon} ${sig.badge}</span>`;
-
-  // Position near cursor
-  const x = e.clientX + 14;
-  const y = e.clientY - 10;
-  hoverTip.style.left = Math.min(x, window.innerWidth - 280) + 'px';
-  hoverTip.style.top = y + 'px';
+  hoverTip.style.left = Math.min(e.clientX + 14, window.innerWidth - 280) + 'px';
+  hoverTip.style.top  = (e.clientY - 10) + 'px';
   hoverTip.classList.add('visible');
 }
 
-function hideHoverTip() {
-  hoverTip.classList.remove('visible');
-}
+function hideHoverTip() { hoverTip.classList.remove('visible'); }
 
-// Wire up hover events to all graph points
 document.querySelectorAll('.graph-point').forEach(pt => {
   pt.addEventListener('mouseenter', e => showHoverTip(e, parseInt(pt.dataset.story)));
   pt.addEventListener('mousemove',  e => showHoverTip(e, parseInt(pt.dataset.story)));
