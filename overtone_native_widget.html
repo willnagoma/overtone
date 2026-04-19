@@ -1014,7 +1014,7 @@ function renderMomentsChart() {
       }
       svg.appendChild(bar);
     }
-    if (i%3===0||i===timeline.length-1) {
+    if (t.count > 0) {
       const lbl=document.createElementNS(ns,'text');
       lbl.setAttribute('x',x+barW/2); lbl.setAttribute('y',H-4);
       lbl.setAttribute('fill','#9898b0'); lbl.setAttribute('font-size','9');
