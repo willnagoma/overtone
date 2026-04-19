@@ -70,6 +70,40 @@
   .graph-point { cursor: pointer; }
   .graph-point:hover { r: 7; }
 
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── MOMENTS CHART ── */
+  .moments-chart-wrap { position: relative; user-select: none; }
+  .moment-bar { cursor: pointer; transition: opacity 0.1s; }
+  .moment-bar:hover { opacity: 0.8; }
+
+  /* ── MOMENT CARDS ── */
+  .moment-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .moment-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; cursor: pointer; transition: background 0.1s; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .moment-card:hover { background: var(--surface-2); }
+  .moment-card.active { background: var(--green-bg); border-color: var(--green); }
+  .moment-card-left { flex: 1; min-width: 0; }
+  .moment-card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 5px; }
+  .moment-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .moment-pill { font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary); }
+  .moment-pill.positive { background: var(--green-bg); color: var(--green); border-color: transparent; font-weight: 600; }
+  .moment-pill.negative { background: var(--red-bg); color: var(--red); border-color: transparent; font-weight: 600; }
+  .moment-pill.mixed { background: var(--purple-light); color: var(--purple-dark); border-color: transparent; font-weight: 600; }
+  .moment-window { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .moment-card-arrow { font-size: 16px; color: var(--text-muted); flex-shrink: 0; margin-top: 2px; }
+  .moment-card.active .moment-card-arrow { color: var(--green); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 24px; text-align: center; color: var(--text-muted); margin-top: 16px; }
+  .empty-state-icon { font-size: 26px; margin-bottom: 8px; }
+  .empty-state-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+  .empty-state-body { font-size: 12px; line-height: 1.6; }
+
+  /* ── MOMENTS LEGEND ── */
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
   /* ── HOVER TOOLTIP ── */
   .hover-tip {
     position: fixed;
@@ -216,15 +250,17 @@
     <div class="page-title">Insights</div>
 
     <div class="subtabs">
-      <div class="subtab"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
-      <div class="subtab active"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
-      <div class="subtab"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
+      <div class="subtab" onclick="switchTab('overview')"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
+      <div class="subtab active" id="subtab-monitor" onclick="switchTab('monitor')"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
+      <div class="subtab" id="subtab-moments" onclick="switchTab('moments')"><span class="subtab-icon">⚡</span><span>MOMENTS</span></div>
+      <div class="subtab" onclick="switchTab('articles')"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
       <div style="margin-left:20px;display:flex;align-items:center;gap:10px;padding-bottom:2px;">
         <input class="kw-input" placeholder="Add a Keyword" />
         <button class="date-range-btn">Jan 2025 – Oct 2025 · South Africa</button>
       </div>
     </div>
 
+    <div id="panel-monitor" class="tab-panel active">
     <div class="filter-bar">
       <div class="filter-box">
         <span class="filter-label">Your Filters:</span>
@@ -248,42 +284,7 @@
         <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a point to see why Overtone scored it</span>
       </div>
       <div class="chart-wrap">
-        <svg width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible">
-          <defs>
-            <linearGradient id="areaG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#6c63e0" stop-opacity="0.15"/>
-              <stop offset="100%" stop-color="#6c63e0" stop-opacity="0.01"/>
-            </linearGradient>
-          </defs>
-          <line x1="10" y1="10"  x2="870" y2="10"  stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="60"  x2="870" y2="60"  stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="110" x2="870" y2="110" stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="160" x2="870" y2="160" stroke="#e4e4ea" stroke-width="1"/>
-          <polygon points="30,178 30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168 830,178" fill="url(#areaG)"/>
-          <polyline points="30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168" fill="none" stroke="#6c63e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle class="graph-point" cx="30" cy="20" r="5.5" fill="#fff" stroke="#1a7a4a" stroke-width="2.5" data-story="0" onclick="triggerGraph(event,0)"/>
-<circle class="graph-point" cx="118" cy="143" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="1" onclick="triggerGraph(event,1)"/>
-<circle class="graph-point" cx="207" cy="157" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="2" onclick="triggerGraph(event,2)"/>
-<circle class="graph-point" cx="296" cy="164" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="3" onclick="triggerGraph(event,3)"/>
-<circle class="graph-point" cx="385" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="4" onclick="triggerGraph(event,4)"/>
-<circle class="graph-point" cx="474" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="5" onclick="triggerGraph(event,5)"/>
-<circle class="graph-point" cx="563" cy="167" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="6" onclick="triggerGraph(event,6)"/>
-<circle class="graph-point" cx="652" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="7" onclick="triggerGraph(event,7)"/>
-<circle class="graph-point" cx="741" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="8" onclick="triggerGraph(event,8)"/>
-<circle class="graph-point" cx="830" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="9" onclick="triggerGraph(event,9)"/>
-
-          <text x="30" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">1 Apr</text>
-<text x="118" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">31 Jan</text>
-<text x="207" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
-<text x="296" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">6 Feb</text>
-<text x="385" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">18 Jul</text>
-<text x="474" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">28 Jan</text>
-<text x="563" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
-<text x="652" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
-<text x="741" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">29 May</text>
-<text x="830" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
-
-        </svg>
+        <svg id="monitor-svg" width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible"></svg>
       </div>
       <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
     </div>
@@ -408,10 +409,47 @@
           0.0472744
         </div>
       </div>
-    </div>
+    </div><!-- /table-wrap -->
+    </div><!-- /panel-monitor -->
 
-  </div>
-</div>
+    <!-- ══ MOMENTS PANEL ══════════════════════════ -->
+    <div id="panel-moments" class="tab-panel">
+      <div class="chart-card">
+        <div class="chart-legend-row" style="gap:16px;">
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span class="legend-swatch" style="background:#1a8a52;"></span> Moment burst
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span class="legend-swatch" style="background:rgba(108,99,224,0.3);"></span> Baseline activity
+          </span>
+          <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a moment bar to explore it</span>
+        </div>
+        <div class="moments-chart-wrap">
+          <svg id="moments-svg" width="100%" height="200" viewBox="0 0 880 200" preserveAspectRatio="none" style="overflow:visible"></svg>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Detected moments</div>
+          <div id="moment-list" class="moment-list"></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Moment detail</div>
+          <div id="moment-detail">
+            <div class="empty-state">
+              <div class="empty-state-icon">⚡</div>
+              <div class="empty-state-title">Select a moment to explore it</div>
+              <div class="empty-state-body">Each moment shows which articles drove the burst and what they had in common.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /panel-moments -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <!-- HOVER TOOLTIP (graph points only) -->
 <div class="hover-tip" id="hover-tip">
@@ -753,6 +791,313 @@ document.querySelectorAll('.graph-point').forEach(pt => {
   pt.addEventListener('mousemove',  e => showHoverTip(e, parseInt(pt.dataset.story)));
   pt.addEventListener('mouseleave', hideHoverTip);
 });
+
+// ── TAB SWITCHING ────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const st = document.getElementById('subtab-' + name);
+  const pn = document.getElementById('panel-' + name);
+  if (st) st.classList.add('active');
+  if (pn) pn.classList.add('active');
+  if (name === 'moments') renderMomentsChart();
+}
+
+// ── MONITOR CHART (chronological) ───────────────
+function renderMonitorChart() {
+  const svg = document.getElementById('monitor-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W=880, H=210, padL=10, padR=10, padT=10, padB=28;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const monthMap = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2]||new Date().getFullYear()), monthMap[p[1]]-1, parseInt(p[0]));
+  }
+  const sorted = [...stories].sort((a,b) => parseDate(a.date) - parseDate(b.date));
+  const n = sorted.length;
+  const maxScore = Math.max(...sorted.map(s => s.score));
+  const step = plotW / (n - 1);
+  function cx(i) { return padL + i * step; }
+  function cy(score) { return padT + plotH - (score / maxScore) * plotH * 0.9; }
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(ns,'defs');
+  const grad = document.createElementNS(ns,'linearGradient');
+  grad.setAttribute('id','monitorAreaG'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s0 = document.createElementNS(ns,'stop');
+  s0.setAttribute('offset','0%'); s0.setAttribute('stop-color','#6c63e0'); s0.setAttribute('stop-opacity','0.15');
+  const s1 = document.createElementNS(ns,'stop');
+  s1.setAttribute('offset','100%'); s1.setAttribute('stop-color','#6c63e0'); s1.setAttribute('stop-opacity','0.01');
+  grad.appendChild(s0); grad.appendChild(s1); defs.appendChild(grad); svg.appendChild(defs);
+
+  [0.25,0.5,0.75,1].forEach(frac => {
+    const y = padT + plotH - frac * plotH * 0.9;
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1',padL); line.setAttribute('x2',W-padR);
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','#e4e4ea'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+  });
+
+  const baseY = padT + plotH;
+  const polyPts = [`${cx(0)},${baseY}`, ...sorted.map((s,i)=>`${cx(i)},${cy(s.score)}`), `${cx(n-1)},${baseY}`].join(' ');
+  const poly = document.createElementNS(ns,'polygon');
+  poly.setAttribute('points',polyPts); poly.setAttribute('fill','url(#monitorAreaG)');
+  svg.appendChild(poly);
+
+  const linePts = sorted.map((s,i)=>`${cx(i)},${cy(s.score)}`).join(' ');
+  const polyline = document.createElementNS(ns,'polyline');
+  polyline.setAttribute('points',linePts); polyline.setAttribute('fill','none');
+  polyline.setAttribute('stroke','#6c63e0'); polyline.setAttribute('stroke-width','2');
+  polyline.setAttribute('stroke-linecap','round'); polyline.setAttribute('stroke-linejoin','round');
+  svg.appendChild(polyline);
+
+  sorted.forEach((s,i) => {
+    const x = cx(i), y = cy(s.score);
+    const isHigh = s.score >= 0.08;
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('class','graph-point');
+    circle.setAttribute('cx',x); circle.setAttribute('cy',y);
+    circle.setAttribute('r', isHigh ? '5.5' : '5');
+    circle.setAttribute('fill','#fff');
+    circle.setAttribute('stroke', isHigh ? '#1a7a4a' : '#6c63e0');
+    circle.setAttribute('stroke-width', isHigh ? '2.5' : '2');
+    circle.setAttribute('data-story', s.id);
+    circle.addEventListener('click', e => triggerGraph(e, s.id));
+    circle.addEventListener('mouseenter', e => showHoverTip(e, s.id));
+    circle.addEventListener('mousemove',  e => showHoverTip(e, s.id));
+    circle.addEventListener('mouseleave', hideHoverTip);
+    svg.appendChild(circle);
+
+    const dateLabel = s.date.replace(/ \d{4}$/,'');
+    const text = document.createElementNS(ns,'text');
+    text.setAttribute('x',x); text.setAttribute('y',H-4);
+    text.setAttribute('fill','#9898b0'); text.setAttribute('font-size','9');
+    text.setAttribute('font-family','Inter'); text.setAttribute('text-anchor','middle');
+    text.textContent = dateLabel;
+    svg.appendChild(text);
+  });
+}
+
+// ── MOMENTS DATA ─────────────────────────────────
+function buildTimeline(storiesArr) {
+  const monthMap = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2]), monthMap[p[1]]-1, parseInt(p[0]));
+  }
+  const buckets = {};
+  storiesArr.forEach(s => {
+    const d = parseDate(s.date);
+    const key = d.toISOString().slice(0,10);
+    if (!buckets[key]) buckets[key] = { date:d, count:0, storyIds:[] };
+    buckets[key].count++;
+    buckets[key].storyIds.push(s.id);
+  });
+  const keys = Object.keys(buckets).sort();
+  if (!keys.length) return [];
+  const start = new Date(keys[0]), end = new Date(keys[keys.length-1]);
+  const timeline = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    const key = d.toISOString().slice(0,10);
+    const b = buckets[key] || { count:0, storyIds:[] };
+    const dd = new Date(d);
+    timeline.push({ date:dd, dateStr:dd.toLocaleDateString('en-GB',{day:'numeric',month:'short'}), count:b.count, storyIds:b.storyIds });
+  }
+  return timeline;
+}
+
+function detectMoments(timeline, window=3, threshold=1.5, minCount=2) {
+  if (timeline.length < window+1) return [];
+  const spikeDays = [];
+  for (let i=window; i<timeline.length; i++) {
+    const baseline = timeline.slice(i-window,i).map(t=>t.count);
+    const mean = baseline.reduce((a,b)=>a+b,0)/baseline.length;
+    const std = Math.sqrt(baseline.reduce((a,b)=>a+(b-mean)**2,0)/baseline.length);
+    const z = std===0 ? 0 : (timeline[i].count-mean)/std;
+    const isSpike = (std===0 ? timeline[i].count>=minCount : z>=threshold) && timeline[i].count>=minCount;
+    if (isSpike) spikeDays.push({...timeline[i], z:Math.round(z*100)/100});
+  }
+  if (!spikeDays.length) return [];
+  const windows = [];
+  let cur = [spikeDays[0]];
+  for (let i=1; i<spikeDays.length; i++) {
+    const gap = (spikeDays[i].date - cur[cur.length-1].date)/86400000;
+    if (gap<=1) cur.push(spikeDays[i]);
+    else { windows.push(cur); cur=[spikeDays[i]]; }
+  }
+  windows.push(cur);
+  return windows.map(w => {
+    const allIds = [...new Set(w.flatMap(d=>d.storyIds))];
+    const peak = w.reduce((a,b)=>b.count>a.count?b:a);
+    const tones = allIds.flatMap(id=>(stories.find(s=>s.id===id)?.signals||[]).filter(sg=>sg.name==='Tone').map(sg=>sg.color));
+    const pos=tones.filter(c=>c==='green').length, neg=tones.filter(c=>c==='red').length;
+    const sentiment = neg>pos?'negative':pos>0&&neg===0?'positive':'mixed';
+    const startStr=w[0].dateStr, endStr=w[w.length-1].dateStr;
+    return {
+      label:'Coverage burst · '+peak.dateStr, peakDate:peak.dateStr,
+      windowStr: startStr===endStr?startStr:startStr+' – '+endStr,
+      articleCount:w.reduce((a,d)=>a+d.count,0),
+      strength:Math.round(allIds.reduce((a,id)=>a+(stories.find(s=>s.id===id)?.score||0),0)*10000)/10000,
+      zScore:Math.max(...w.map(d=>d.z)), sentiment, storyIds:allIds,
+      spikeDates:w.map(d=>d.date.toISOString().slice(0,10))
+    };
+  });
+}
+
+const timeline = buildTimeline(stories);
+const moments  = detectMoments(timeline);
+const momentDateSet = new Set(moments.flatMap(m=>m.spikeDates));
+const sentimentLabel = { positive:'Positive', negative:'Negative', mixed:'Mixed' };
+const sentimentColors = {
+  positive:{ stripe:'#1a8a52' }, negative:{ stripe:'#c0392b' }, mixed:{ stripe:'#6c63e0' }
+};
+
+// ── MOMENTS CHART ────────────────────────────────
+function renderMomentsChart() {
+  const svg = document.getElementById('moments-svg');
+  if (!svg||!timeline.length) return;
+  svg.innerHTML='';
+  const W=880,H=180,padL=32,padR=16,padT=12,padB=28;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const maxCount=Math.max(...timeline.map(t=>t.count),1);
+  const barW=Math.max(2,Math.floor(plotW/timeline.length)-2);
+  const ns='http://www.w3.org/2000/svg';
+
+  for (let v=0; v<=maxCount; v++) {
+    const y=padT+plotH-(v/maxCount)*plotH;
+    const line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',padL); line.setAttribute('x2',W-padR);
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','#e4e4ea'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+    if (v>0) {
+      const lbl=document.createElementNS(ns,'text');
+      lbl.setAttribute('x',padL-4); lbl.setAttribute('y',y+4);
+      lbl.setAttribute('fill','#9898b0'); lbl.setAttribute('font-size','9');
+      lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','end');
+      lbl.textContent=v; svg.appendChild(lbl);
+    }
+  }
+
+  moments.forEach(m => {
+    const si=timeline.findIndex(t=>t.date.toISOString().slice(0,10)===m.spikeDates[0]);
+    const ei=timeline.findIndex(t=>t.date.toISOString().slice(0,10)===m.spikeDates[m.spikeDates.length-1]);
+    if (si<0) return;
+    const x1=padL+si*(plotW/timeline.length)-2, x2=padL+(ei+1)*(plotW/timeline.length)+2;
+    const shade=document.createElementNS(ns,'rect');
+    shade.setAttribute('x',x1); shade.setAttribute('y',padT);
+    shade.setAttribute('width',x2-x1); shade.setAttribute('height',plotH);
+    shade.setAttribute('fill','rgba(26,138,82,0.08)');
+    shade.setAttribute('stroke','rgba(26,138,82,0.35)'); shade.setAttribute('stroke-width','1');
+    shade.setAttribute('stroke-dasharray','3,3');
+    svg.appendChild(shade);
+  });
+
+  timeline.forEach((t,i) => {
+    const x=padL+i*(plotW/timeline.length)+(plotW/timeline.length-barW)/2;
+    const bh=t.count>0?Math.max(3,(t.count/maxCount)*plotH):0;
+    const y=padT+plotH-bh;
+    const isMoment=momentDateSet.has(t.date.toISOString().slice(0,10));
+    if (t.count>0) {
+      const bar=document.createElementNS(ns,'rect');
+      bar.setAttribute('x',x); bar.setAttribute('y',y);
+      bar.setAttribute('width',barW); bar.setAttribute('height',bh);
+      bar.setAttribute('fill',isMoment?'#1a8a52':'rgba(108,99,224,0.28)');
+      bar.setAttribute('rx','2'); bar.style.cursor=isMoment?'pointer':'default';
+      if (isMoment) {
+        const m=moments.find(mo=>mo.spikeDates.includes(t.date.toISOString().slice(0,10)));
+        bar.addEventListener('click',e=>{e.stopPropagation();openMomentDetail(moments.indexOf(m));});
+      }
+      svg.appendChild(bar);
+    }
+    if (i%3===0||i===timeline.length-1) {
+      const lbl=document.createElementNS(ns,'text');
+      lbl.setAttribute('x',x+barW/2); lbl.setAttribute('y',H-4);
+      lbl.setAttribute('fill','#9898b0'); lbl.setAttribute('font-size','9');
+      lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','middle');
+      lbl.textContent=t.dateStr; svg.appendChild(lbl);
+    }
+  });
+
+  moments.forEach(m => {
+    const pi=timeline.findIndex(t=>t.dateStr===m.peakDate);
+    if (pi<0) return;
+    const cx=padL+pi*(plotW/timeline.length)+(plotW/timeline.length)/2;
+    const lw=110,lh=20,lx=Math.min(Math.max(cx-lw/2,padL),W-padR-lw);
+    const bg=document.createElementNS(ns,'rect');
+    bg.setAttribute('x',lx); bg.setAttribute('y',padT);
+    bg.setAttribute('width',lw); bg.setAttribute('height',lh);
+    bg.setAttribute('fill','rgba(234,246,240,0.95)'); bg.setAttribute('rx','4');
+    bg.setAttribute('stroke','#1a8a52'); bg.setAttribute('stroke-width','1');
+    svg.appendChild(bg);
+    const lbl=document.createElementNS(ns,'text');
+    lbl.setAttribute('x',lx+lw/2); lbl.setAttribute('y',padT+13);
+    lbl.setAttribute('fill','#1a8a52'); lbl.setAttribute('font-size','10');
+    lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','middle');
+    lbl.setAttribute('font-weight','500');
+    lbl.textContent='⚡ Moment · '+m.peakDate; svg.appendChild(lbl);
+  });
+}
+
+// ── MOMENT LIST ──────────────────────────────────
+function renderMomentList() {
+  const list=document.getElementById('moment-list');
+  if (!list) return;
+  if (!moments.length) {
+    list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">⚡</div><div class="empty-state-title">No moments detected yet</div><div class="empty-state-body">Moments appear when article volume spikes significantly above baseline. This period has even daily coverage — check back with a wider date range or more articles.</div></div>`;
+    return;
+  }
+  list.innerHTML=moments.map((m,idx)=>`
+    <div class="moment-card" id="mcard-${idx}" onclick="openMomentDetail(${idx})">
+      <div class="moment-card-left">
+        <div class="moment-card-title">⚡ ${m.label}</div>
+        <div class="moment-card-meta">
+          <span class="moment-pill">${m.articleCount} article${m.articleCount!==1?'s':''}</span>
+          <span class="moment-pill ${m.sentiment}">${sentimentLabel[m.sentiment]}</span>
+          <span class="moment-pill">z = ${m.zScore}</span>
+        </div>
+        <div class="moment-window">${m.windowStr}</div>
+      </div>
+      <div class="moment-card-arrow">›</div>
+    </div>`).join('');
+}
+
+function openMomentDetail(idx) {
+  document.querySelectorAll('.moment-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('mcard-'+idx)?.classList.add('active');
+  const m=moments[idx];
+  const c=sentimentColors[m.sentiment];
+  const momentStories=m.storyIds.map(id=>stories.find(s=>s.id===id)).filter(Boolean);
+  document.getElementById('moment-detail').innerHTML=`
+    <div style="background:${c.stripe};border-radius:8px 8px 0 0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.75);">⚡ Moment detected</span>
+      <span style="font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:20px;">${sentimentLabel[m.sentiment]}</span>
+    </div>
+    <div style="border:1px solid #e4e4ea;border-top:none;border-radius:0 0 8px 8px;padding:14px 16px;background:white;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        ${[['Articles',m.articleCount],['Peak date',m.peakDate],['Z-score',m.zScore]].map(([l,v])=>`
+          <div style="background:#f7f7f9;border:1px solid #e4e4ea;border-radius:6px;padding:8px 10px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#9898b0;margin-bottom:3px;">${l}</div>
+            <div style="font-size:15px;font-weight:600;color:#1a1a2e;">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9898b0;margin-bottom:8px;">Articles in this moment</div>
+      ${momentStories.map(s=>`
+        <div style="padding:8px 10px;border:1px solid #e4e4ea;border-radius:7px;margin-bottom:6px;background:#f7f7f9;cursor:pointer;"
+             onclick="openPopup(${s.id},this,'moment')">
+          <div style="font-size:12px;font-weight:500;color:#1a1a2e;line-height:1.35;margin-bottom:4px;">${s.headline}</div>
+          <div style="font-size:11px;color:#9898b0;">${s.source} · ${s.date}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// Init
+renderMonitorChart();
+renderMomentList();
 </script>
 </body>
 </html>
