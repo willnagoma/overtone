@@ -363,19 +363,35 @@ def build_performance_signal(article: pd.Series, recs: pd.DataFrame) -> dict:
     percentile = (baseline < score).mean() * 100
 
     if percentile >= 90:
-        detail = f"Predicted performance is in the top {100 - percentile:.0f}% of articles in the last 30 days."
+        detail = (
+        f"This article is expected to perform better than most recent articles "
+        f"based on its predicted performance score. It ranks in the top "
+        f"{100 - percentile:.0f}% of articles from the last 30 days, indicating "
+        f"high audience engagement potential.")
         badge = f"Top {100 - percentile:.0f}%"
         color = "green"
     elif percentile >= 75:
-        detail = f"Predicted performance above average for the last 30 days ({percentile:.0f}th percentile)."
+        detail = (
+        f"This article is expected to perform above average compared to recent articles "
+        f"based on its predicted performance score. It ranks in the "
+        f"{percentile:.0f}th percentile over the last 30 days, suggesting "
+        f"good audience engagement potential.")
         badge  = f"{percentile:.0f}th percentile"
         color  = "green"
     elif percentile >= 40:
-        detail = f"Predicted performance is typical for the last 30 days ({percentile:.0f}th percentile)."
+        detail = (
+        f"This article is expected to perform similarly to typical recent articles "
+        f"based on its predicted performance score. It ranks in the "
+        f"{percentile:.0f}th percentile over the last 30 days, indicating "
+        f"moderate audience engagement.")
         badge  = f"{percentile:.0f}th percentile"
         color  = "grey"
     else:
-        detail = f"Predicted performance below average for the last 30 days ({percentile:.0f}th percentile)."
+        detail = (
+        f"This article is expected to perform lower than most recent articles "
+        f"based on its predicted performance score. It ranks in the "
+        f"{percentile:.0f}th percentile over the last 30 days, suggesting "
+        f"limited audience engagement.")
         badge  = f"{percentile:.0f}th percentile"
         color  = "red"
 
