@@ -361,14 +361,15 @@ def build_performance_signal(article: pd.Series, recs: pd.DataFrame) -> dict:
 
     score = article["predicted_performance"]
     percentile = (baseline < score).mean() * 100
+    top_pct = max(1, round(100 - percentile))
 
     if percentile >= 90:
         detail = (
         f"This article is expected to perform better than most recent articles "
         f"based on its predicted performance score. It ranks in the top "
-        f"{100 - percentile:.0f}% of articles from the last 30 days, indicating "
+        f"{top_pct}% of articles from the last 30 days, indicating "
         f"high audience engagement potential.")
-        badge = f"Top {100 - percentile:.0f}%"
+        badge = f"Top {top_pct}%"
         color = "green"
     elif percentile >= 75:
         detail = (
