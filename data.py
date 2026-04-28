@@ -400,6 +400,7 @@ def build_performance_signal(article: pd.Series, recs: pd.DataFrame) -> dict:
         "detail": detail,
         "badge": badge,
         "color": color,
+        "tooltip": "Predicted performance estimates how well an article is expected to perform compared to recent articles based on audience engagement signals.",
     }
 
 
