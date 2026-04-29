@@ -19,9 +19,10 @@ from google.cloud import bigquery
 
 
 BQ_PROJECT        = "capstone-project-400212"
-BQ_DATASET        = "summer2025_chicago"
-BQ_TABLE_RECS     = f"{BQ_PROJECT}.{BQ_DATASET}.v_recommendations_razor_live_affluent"
-BQ_TABLE_AW       = f"{BQ_PROJECT}.{BQ_DATASET}.data_advancedweights_razor_affluence"
+BQ_DATASET_MAIN   = "summer2025_chicago"
+BQ_DATASET_UNCC   = "uncc"
+BQ_TABLE_RECS     = f"{BQ_DATASET_UNCC}.{BQ_DATASET}.v_recommendations_razor_live_affluent"
+BQ_TABLE_AW       = f"{BQ_DATASET_UNCC}.{BQ_DATASET}.data_advancedweights_razor_affluence"
 BQ_TABLE_VERDICTS = f"{BQ_PROJECT}.{BQ_DATASET}.verdicts"
 
 client = bigquery.Client(project=BQ_PROJECT)
