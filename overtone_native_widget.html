@@ -736,15 +736,33 @@ function getMostNotableSignal(s) {
 
 function showHoverTip(e, id) {
   const s = stories.find(x => x.id === id);
-  const sig = getMostNotableSignal(s);
   document.getElementById('ht-headline').textContent = s.headline;
+
+  // Build a plain language summary of what's notable about this article
+  const parts = [];
+
+  // Brand safety first — always surface if flagged
+  const bs = s.signals.find(sg => sg.name === 'Brand Safety');
+  if (bs && bs.color === 'red') parts.push('⚠️ ' + bs.badge);
+
+  // Tone — only if unusual (amber or red)
+  const tone = s.signals.find(sg => sg.name === 'Tone');
+  if (tone && (tone.color === 'amber' || tone.color === 'red')) parts.push(tone.badge + ' tone');
+
+  // Performance — always show if meaningful
   const perf = s.signals.find(sg => sg.name === 'Predicted Performance');
-  const perfLabel = perf ? perf.badge : '';
-  const bsSig = s.signals.find(sg => sg.name === 'Brand Safety');
-  const bsLabel = bsSig && bsSig.color === 'red' ? '⚠️ ' + bsSig.badge : 'No safety flags';
-  document.getElementById('ht-score').textContent = perfLabel + (perfLabel ? ' · ' : '') + bsLabel;
+  if (perf && perf.badge !== 'No baseline') parts.push(perf.badge);
+
+  // Fallback if nothing notable
+  if (parts.length === 0 && tone) parts.push(tone.badge + ' tone');
+
+  document.getElementById('ht-score').textContent = parts.join(' · ');
+
+  // Most notable signal badge
+  const sig = getMostNotableSignal(s);
   document.getElementById('ht-signal').innerHTML =
     `<span class="hover-tip-signal ${sig.color}">${sig.icon} ${sig.badge}</span>`;
+
   hoverTip.style.left = Math.min(e.clientX + 14, window.innerWidth - 280) + 'px';
   hoverTip.style.top  = (e.clientY - 10) + 'px';
   hoverTip.classList.add('visible');
