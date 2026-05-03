@@ -216,9 +216,10 @@
     <div class="page-title">Insights</div>
 
     <div class="subtabs">
-      <div class="subtab"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
-      <div class="subtab active"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
-      <div class="subtab"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
+      <div class="subtab" onclick="switchTab('overview')"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
+      <div class="subtab active" id="subtab-monitor" onclick="switchTab('monitor')"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
+      <div class="subtab" id="subtab-moments" onclick="switchTab('moments')"><span class="subtab-icon">⚡</span><span>MOMENTS</span></div>
+      <div class="subtab" onclick="switchTab('articles')"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
       <div style="margin-left:20px;display:flex;align-items:center;gap:10px;padding-bottom:2px;">
         <input class="kw-input" placeholder="Add a Keyword" />
         <button class="date-range-btn">Jan 2025 – Oct 2025 · South Africa</button>
@@ -248,42 +249,7 @@
         <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a point to see why Overtone scored it</span>
       </div>
       <div class="chart-wrap">
-        <svg width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible">
-          <defs>
-            <linearGradient id="areaG" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#6c63e0" stop-opacity="0.15"/>
-              <stop offset="100%" stop-color="#6c63e0" stop-opacity="0.01"/>
-            </linearGradient>
-          </defs>
-          <line x1="10" y1="10"  x2="870" y2="10"  stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="60"  x2="870" y2="60"  stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="110" x2="870" y2="110" stroke="#e4e4ea" stroke-width="1"/>
-          <line x1="10" y1="160" x2="870" y2="160" stroke="#e4e4ea" stroke-width="1"/>
-          <polygon points="30,178 30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168 830,178" fill="url(#areaG)"/>
-          <polyline points="30,20 118,143 207,157 296,164 385,165 474,165 563,167 652,168 741,168 830,168" fill="none" stroke="#6c63e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle class="graph-point" cx="30" cy="20" r="5.5" fill="#fff" stroke="#1a7a4a" stroke-width="2.5" data-story="0" onclick="triggerGraph(event,0)"/>
-<circle class="graph-point" cx="118" cy="143" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="1" onclick="triggerGraph(event,1)"/>
-<circle class="graph-point" cx="207" cy="157" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="2" onclick="triggerGraph(event,2)"/>
-<circle class="graph-point" cx="296" cy="164" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="3" onclick="triggerGraph(event,3)"/>
-<circle class="graph-point" cx="385" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="4" onclick="triggerGraph(event,4)"/>
-<circle class="graph-point" cx="474" cy="165" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="5" onclick="triggerGraph(event,5)"/>
-<circle class="graph-point" cx="563" cy="167" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="6" onclick="triggerGraph(event,6)"/>
-<circle class="graph-point" cx="652" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="7" onclick="triggerGraph(event,7)"/>
-<circle class="graph-point" cx="741" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="8" onclick="triggerGraph(event,8)"/>
-<circle class="graph-point" cx="830" cy="168" r="5" fill="#fff" stroke="#6c63e0" stroke-width="2" data-story="9" onclick="triggerGraph(event,9)"/>
-
-          <text x="30" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">1 Apr</text>
-<text x="118" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">31 Jan</text>
-<text x="207" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
-<text x="296" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">6 Feb</text>
-<text x="385" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">18 Jul</text>
-<text x="474" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">28 Jan</text>
-<text x="563" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
-<text x="652" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">24 Mar</text>
-<text x="741" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">29 May</text>
-<text x="830" y="196" fill="#9898b0" font-size="9" font-family="Inter" text-anchor="middle">8 Oct</text>
-
-        </svg>
+        <svg id="monitor-svg" width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible"></svg>
       </div>
       <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
     </div>
@@ -751,10 +717,98 @@ function showHoverTip(e, id) {
 function hideHoverTip() { hoverTip.classList.remove('visible'); }
 
 document.querySelectorAll('.graph-point').forEach(pt => {
-  pt.addEventListener('mouseenter', e => showHoverTip(e, parseInt(pt.dataset.story)));
-  pt.addEventListener('mousemove',  e => showHoverTip(e, parseInt(pt.dataset.story)));
+  pt.addEventListener('mouseenter', e => showHoverTip(e, pt.dataset.story));
+  pt.addEventListener('mousemove',  e => showHoverTip(e, pt.dataset.story));
   pt.addEventListener('mouseleave', hideHoverTip);
 });
+
+// ── TAB SWITCHING ────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const st = document.getElementById('subtab-' + name);
+  const pn = document.getElementById('panel-' + name);
+  if (st) st.classList.add('active');
+  if (pn) pn.classList.add('active');
+  if (name === 'moments') renderMomentsChart();
+}
+
+// ── MONITOR CHART (chronological) ───────────────
+function renderMonitorChart() {
+  const svg = document.getElementById('monitor-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W=880, H=210, padL=10, padR=10, padT=10, padB=28;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const monthMap = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2]||new Date().getFullYear()), monthMap[p[1]]-1, parseInt(p[0]));
+  }
+  const sorted = [...stories].sort((a,b) => parseDate(a.date) - parseDate(b.date));
+  const n = sorted.length;
+  const maxScore = Math.max(...sorted.map(s => s.score));
+  const step = plotW / (n - 1);
+  function cx(i) { return padL + i * step; }
+  function cy(score) { return padT + plotH - (score / maxScore) * plotH * 0.9; }
+  const ns = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(ns,'defs');
+  const grad = document.createElementNS(ns,'linearGradient');
+  grad.setAttribute('id','monitorAreaG'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s0 = document.createElementNS(ns,'stop');
+  s0.setAttribute('offset','0%'); s0.setAttribute('stop-color','#6c63e0'); s0.setAttribute('stop-opacity','0.15');
+  const s1 = document.createElementNS(ns,'stop');
+  s1.setAttribute('offset','100%'); s1.setAttribute('stop-color','#6c63e0'); s1.setAttribute('stop-opacity','0.01');
+  grad.appendChild(s0); grad.appendChild(s1); defs.appendChild(grad); svg.appendChild(defs);
+  [0.25,0.5,0.75,1].forEach(frac => {
+    const y = padT + plotH - frac * plotH * 0.9;
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1',padL); line.setAttribute('x2',W-padR);
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','#e4e4ea'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+  });
+  const baseY = padT + plotH;
+  const polyPts = [`${cx(0)},${baseY}`, ...sorted.map((s,i)=>`${cx(i)},${cy(s.score)}`), `${cx(n-1)},${baseY}`].join(' ');
+  const poly = document.createElementNS(ns,'polygon');
+  poly.setAttribute('points',polyPts); poly.setAttribute('fill','url(#monitorAreaG)');
+  svg.appendChild(poly);
+  const linePts = sorted.map((s,i)=>`${cx(i)},${cy(s.score)}`).join(' ');
+  const polyline = document.createElementNS(ns,'polyline');
+  polyline.setAttribute('points',linePts); polyline.setAttribute('fill','none');
+  polyline.setAttribute('stroke','#6c63e0'); polyline.setAttribute('stroke-width','2');
+  polyline.setAttribute('stroke-linecap','round'); polyline.setAttribute('stroke-linejoin','round');
+  svg.appendChild(polyline);
+  sorted.forEach((s,i) => {
+    const x = cx(i), y = cy(s.score);
+    const isHigh = s.score >= 0.07;
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('class','graph-point');
+    circle.setAttribute('cx',x); circle.setAttribute('cy',y);
+    circle.setAttribute('r', isHigh ? '5.5' : '5');
+    circle.setAttribute('fill','#fff');
+    circle.setAttribute('stroke', isHigh ? '#1a7a4a' : '#6c63e0');
+    circle.setAttribute('stroke-width', isHigh ? '2.5' : '2');
+    circle.setAttribute('data-story', s.id);
+    circle.addEventListener('click', e => triggerGraph(e, s.id));
+    circle.addEventListener('mouseenter', e => showHoverTip(e, s.id));
+    circle.addEventListener('mousemove',  e => showHoverTip(e, s.id));
+    circle.addEventListener('mouseleave', hideHoverTip);
+    svg.appendChild(circle);
+    const dateLabel = s.date.replace(/ \d{4}$/,'');
+    const text = document.createElementNS(ns,'text');
+    text.setAttribute('x',x); text.setAttribute('y',H-4);
+    text.setAttribute('fill','#9898b0'); text.setAttribute('font-size','9');
+    text.setAttribute('font-family','Inter'); text.setAttribute('text-anchor','middle');
+    text.textContent = dateLabel;
+    svg.appendChild(text);
+  });
+}
+
+// Init
+renderMonitorChart();
+
 </script>
 </body>
 </html>
