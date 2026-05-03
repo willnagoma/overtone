@@ -151,7 +151,7 @@ def load_verdicts() -> dict:
     """
     try:
         df = client.query(f"SELECT id, verdict FROM `{BQ_TABLE_VERDICTS}`").to_dataframe()
-        return dict(zip(df["id"], df["verdict"]))
+        return {str(k): v for k, v in zip(df["id"], df["verdict"])}
     except Exception as e:
         print(f"Warning: could not load verdicts table, falling back to build_verdict(). Error: {e}")
         return {}
@@ -504,7 +504,7 @@ def get_stories() -> list[dict]:
         signals = [tone_signal, bs_signal, concept_signal, perf_signal]
 
         # Use LLM verdict from BQ if available, fall back to rule-based build_verdict()
-        verdict = verdicts.get(article["id"]) or build_verdict(article, signals, source_sentence)
+        verdict = verdicts.get(str(article["id"])) or build_verdict(article, signals, source_sentence)
  
         date_str = article["datepub"].strftime("%-d %b %Y") if pd.notna(article["datepub"]) else ""
  
