@@ -19,11 +19,10 @@ from google.cloud import bigquery
 
 
 BQ_PROJECT        = "capstone-project-400212"
-BQ_DATASET_MAIN   = "summer2025_chicago"
 BQ_DATASET_UNCC   = "uncc"
 BQ_TABLE_RECS     = f"{BQ_PROJECT}.{BQ_DATASET_UNCC}.v_recommendations_razor_live_affluent"
 BQ_TABLE_AW       = f"{BQ_PROJECT}.{BQ_DATASET_UNCC}.v_articles_razor_affluent_advancedweights"
-BQ_TABLE_VERDICTS = f"{BQ_PROJECT}.{BQ_DATASET_MAIN}.verdicts"
+BQ_TABLE_VERDICTS = f"{BQ_PROJECT}.{BQ_DATASET_UNCC}.verdicts"
 
 client = bigquery.Client(project=BQ_PROJECT)
 # Constants
