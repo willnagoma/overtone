@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overtone · Insights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f4f6;
+    --surface: #ffffff;
+    --surface-2: #f7f7f9;
+    --border: #e4e4ea;
+    --border-mid: #d0d0dc;
+    --text-primary: #1a1a2e;
+    --text-secondary: #5a5a7a;
+    --text-muted: #9898b0;
+    --purple: #6c63e0;
+    --purple-dark: #5a52cc;
+    --purple-light: rgba(108,99,224,0.10);
+    --purple-lighter: rgba(108,99,224,0.06);
+    --purple-border: rgba(108,99,224,0.25);
+    --green: #1a8a52;
+    --green-bg: #eaf6f0;
+    --amber: #8a6000;
+    --amber-bg: #fef8e6;
+    --red: #c0392b;
+    --red-bg: #fdecea;
+    --shadow-popup: 0 4px 24px rgba(26,26,46,0.13), 0 1px 6px rgba(26,26,46,0.07);
+    --shadow-sm: 0 1px 4px rgba(26,26,46,0.08);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --sidebar-w: 180px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 13px; line-height: 1.5; min-height: 100vh; display: flex; }
+  .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; display: flex; flex-direction: column; padding: 20px 0 0; min-height: 100vh; }
+  .sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 0 18px 24px; font-size: 16px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
+  .logo-ring { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa); }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+  .nav-item.active { background: var(--purple-light); color: var(--purple); font-weight: 500; }
+  .nav-chevron { margin-left: auto; font-size: 10px; color: var(--text-muted); }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; height: 52px; display: flex; align-items: center; justify-content: flex-end; }
+  .topbar-logo { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg, #a78bfa, #6c63e0, #38bdf8, #a78bfa); }
+  .content { padding: 28px 32px; overflow-y: auto; flex: 1; }
+  .page-title { font-size: 26px; font-weight: 300; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 20px; }
+  .subtabs { display: flex; align-items: flex-end; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .subtab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 20px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .subtab.active { color: var(--purple); border-bottom-color: var(--purple); font-weight: 500; }
+  .subtab-icon { font-size: 15px; }
+  .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .filter-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; display: flex; align-items: center; gap: 14px; }
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--purple); }
+  .filter-chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+  .chip-dot { width: 10px; height: 10px; border-radius: 2px; background: var(--purple); opacity: 0.6; }
+  .chip-dot.lighter { opacity: 0.3; }
+  .type-select-wrap { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .type-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .type-select { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 28px 6px 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); appearance: none; cursor: pointer; }
+  .date-range-btn { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); cursor: pointer; }
+  .kw-input { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--surface); width: 180px; }
+  .kw-input::placeholder { color: var(--text-muted); font-style: italic; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px 14px; margin-bottom: 20px; box-shadow: var(--shadow-sm); position: relative; }
+  .chart-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .chart-toggle { display: flex; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
+  .chart-toggle-btn { padding: 5px 12px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; background: transparent; border: none; color: var(--text-secondary); transition: all 0.12s; white-space: nowrap; }
+  .chart-toggle-btn.active { background: var(--purple); color: #fff; }
+  .chart-toggle-btn.active.moments { background: var(--green); }
+  .chart-legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--text-secondary); }
+  .legend-line { width: 20px; height: 2px; background: var(--purple); border-radius: 1px; }
+  .chart-wrap { position: relative; user-select: none; }
+  .graph-point { cursor: pointer; }
+  .graph-point:hover { r: 7; }
+
+  /* ── HOVER TOOLTIP ── */
+  .hover-tip {
+    position: fixed;
+    background: #1a1a2e;
+    color: #fff;
+    border-radius: 7px;
+    padding: 9px 13px;
+    font-size: 12px;
+    line-height: 1.5;
+    pointer-events: none;
+    z-index: 900;
+    max-width: 260px;
+    box-shadow: 0 4px 16px rgba(26,26,46,0.22);
+    opacity: 0;
+    transition: opacity 0.1s ease;
+  }
+  .hover-tip.visible { opacity: 1; }
+  .hover-tip-headline { font-weight: 500; margin-bottom: 4px; }
+  .hover-tip-score { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px; font-family: monospace; }
+  .hover-tip-signal { font-size: 11px; color: rgba(255,255,255,0.85); padding: 3px 7px; border-radius: 4px; display: inline-block; margin-top: 2px; }
+  .hover-tip-signal.green  { background: rgba(26,138,82,0.35); }
+  .hover-tip-signal.amber  { background: rgba(138,96,0,0.4); }
+  .hover-tip-signal.red    { background: rgba(192,57,43,0.4); }
+  .hover-tip-signal.purple { background: rgba(108,99,224,0.35); }
+  .hover-tip-signal.grey   { background: rgba(255,255,255,0.1); }
+  .hover-tip-hint { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .table-head { display: grid; grid-template-columns: 32px 1fr 200px 110px 120px 130px; padding: 10px 16px; background: var(--purple); gap: 12px; align-items: center; }
+  .th { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 0.02em; }
+  .table-row { display: grid; grid-template-columns: 32px 1fr 200px 110px 120px 130px; padding: 10px 16px; border-bottom: 1px solid var(--border); gap: 12px; cursor: pointer; transition: background 0.1s; align-items: center; }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: var(--purple-lighter); }
+  .table-row.active { background: var(--purple-light); border-left: 3px solid var(--purple); padding-left: 13px; }
+  .row-num { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .row-headline { font-size: 12.5px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .table-row.active .row-headline { font-weight: 500; color: var(--purple-dark); }
+  .row-url { font-size: 12px; color: var(--purple); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-date { font-size: 12px; color: var(--text-secondary); }
+  .row-source { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-score { font-size: 11px; font-family: monospace; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+  .score-bar-track { width: 36px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: var(--purple); }
+  .score-bar-fill.high { background: #1a8a52; }
+  .score-bar-fill.mid { background: var(--purple); }
+  .score-bar-fill.low { background: var(--text-muted); }
+  .popup-overlay { position: fixed; inset: 0; z-index: 500; pointer-events: none; }
+  .popup { position: absolute; width: 360px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: var(--radius); box-shadow: var(--shadow-popup); pointer-events: all; opacity: 0; transform: translateY(5px) scale(0.985); transition: opacity 0.16s ease, transform 0.16s ease; z-index: 600; overflow: hidden; }
+  .popup.visible { opacity: 1; transform: translateY(0) scale(1); }
+  .popup-caret { position: absolute; top: -7px; left: 28px; width: 13px; height: 13px; background: var(--surface); border: 1px solid var(--border-mid); border-right: none; border-bottom: none; transform: rotate(45deg); z-index: 1; }
+  .popup.caret-bottom .popup-caret { top: auto; bottom: -7px; transform: rotate(225deg); }
+  .popup-stripe { background: var(--purple); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .popup-stripe-left { display: flex; align-items: center; gap: 8px; }
+  .popup-why-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+  .popup-score-badge { font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 20px; }
+  .popup-close { background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 20px; height: 20px; color: rgba(255,255,255,0.8); font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+  .popup-close:hover { background: rgba(255,255,255,0.28); }
+  .popup-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--border); }
+  .popup-source { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .popup-headline { font-size: 13.5px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .popup-verdict { margin: 10px 16px; padding: 9px 12px; background: var(--purple-lighter); border-left: 3px solid var(--purple); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; line-height: 1.55; color: var(--text-secondary); }
+  .popup-signals { padding: 0 16px 10px; }
+  .signals-title { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; }
+  .signal-row-item { display: flex; align-items: center; padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 5px; gap: 8px; background: var(--surface-2); }
+  .sig-icon { font-size: 13px; flex-shrink: 0; }
+  .sig-text { flex: 1; min-width: 0; }
+  .sig-name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .sig-detail { font-size: 11px; color: var(--text-muted); }
+  .sig-badge { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+  .badge-green  { background: var(--green-bg);  color: var(--green); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber); }
+  .badge-red    { background: var(--red-bg);    color: var(--red); }
+  .badge-purple { background: var(--purple-light); color: var(--purple-dark); }
+  .badge-grey   { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+  .popup-concepts { padding: 0 16px 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .concept-pill { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-secondary); }
+  .concept-pill.matched { background: var(--purple-light); border-color: var(--purple-border); color: var(--purple-dark); font-weight: 500; }
+  .popup-footer { display: flex; gap: 8px; padding: 10px 16px 14px; border-top: 1px solid var(--border); background: var(--surface-2); }
+  .pfooter-btn { flex: 1; padding: 7px 10px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.12s; border: 1px solid var(--border-mid); background: var(--surface); color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; justify-content: center; }
+  .pfooter-btn:hover { background: var(--border); color: var(--text-primary); }
+  .pfooter-btn.primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .pfooter-btn.primary:hover { background: var(--purple-dark); }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── MOMENTS CHART ── */
+  .moments-chart-wrap { position: relative; user-select: none; }
+  .bar-group { cursor: default; }
+  .moment-bar { cursor: pointer; transition: opacity 0.1s; }
+  .moment-bar:hover { opacity: 0.8; }
+  .moment-annotation { pointer-events: none; }
+
+  /* ── MOMENT CARDS ── */
+  .moment-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .moment-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    cursor: pointer; transition: background 0.1s;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  }
+  .moment-card:hover { background: var(--surface-2); }
+  .moment-card.active { background: var(--green-bg); border-color: var(--green); }
+  .moment-card-left { flex: 1; min-width: 0; }
+  .moment-card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 5px; }
+  .moment-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .moment-pill {
+    font-size: 11px; padding: 2px 7px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary);
+  }
+  .moment-pill.positive { background: var(--green-bg); color: var(--green); border-color: transparent; font-weight: 600; }
+  .moment-pill.negative { background: var(--red-bg);   color: var(--red);   border-color: transparent; font-weight: 600; }
+  .moment-pill.mixed    { background: var(--purple-light); color: var(--purple-dark); border-color: transparent; font-weight: 600; }
+  .moment-window { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .moment-card-arrow { font-size: 16px; color: var(--text-muted); flex-shrink: 0; margin-top: 2px; }
+  .moment-card.active .moment-card-arrow { color: var(--green); }
+
+  /* ── MOMENT POPUP ── */
+  .moment-popup-stripe { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .moment-popup-stripe.positive { background: var(--green); }
+  .moment-popup-stripe.negative { background: var(--red); }
+  .moment-popup-stripe.mixed    { background: var(--purple); }
+  .moment-stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px 16px 8px; }
+  .moment-stat-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; }
+  .moment-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 3px; }
+  .moment-stat-value { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .moment-articles-title { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 4px 16px 7px; }
+  .moment-story-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 7px 16px; border-top: 1px solid var(--border);
+    cursor: pointer; transition: background 0.1s;
+  }
+  .moment-story-row:hover { background: var(--purple-lighter); }
+  .moment-story-headline { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.35; flex: 1; }
+  .moment-story-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 24px; text-align: center; color: var(--text-muted); margin-top: 16px; }
+  .empty-state-icon { font-size: 26px; margin-bottom: 8px; }
+  .empty-state-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+  .empty-state-body { font-size: 12px; line-height: 1.6; }
+
+  /* ── MOMENTS LEGEND ── */
+  .chart-legend-row.moments-legend { gap: 0; justify-content: flex-start; }
+  .chart-legend-row.moments-legend .legend-swatch-item { display: flex; align-items: center; gap: 6px; margin-right: 20px; }
+  .chart-legend-row.moments-legend .legend-hint { margin-left: auto; font-size: 11px; color: var(--text-muted); font-style: italic; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo"><div class="logo-ring"></div>Overtone</div>
+  <div class="sidebar-nav">
+    <div class="nav-item">🔍 Overview</div>
+    <div class="nav-item active">📊 Insights</div>
+    <div class="nav-item">📁 Collections <span class="nav-chevron">›</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar"><div class="topbar-logo"></div></div>
+  <div class="content">
+    <div class="page-title">Insights</div>
+
+    <div class="subtabs">
+      <div class="subtab" onclick="switchTab('overview')"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
+      <div class="subtab active" id="subtab-monitor" onclick="switchTab('monitor')"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
+      <div class="subtab" id="subtab-moments" onclick="switchTab('moments')"><span class="subtab-icon">⚡</span><span>MOMENTS</span></div>
+      <div class="subtab" onclick="switchTab('articles')"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
+      <div style="margin-left:20px;display:flex;align-items:center;gap:10px;padding-bottom:2px;">
+        <input class="kw-input" placeholder="Add a Keyword" />
+        <button class="date-range-btn">Jan 2025 – Oct 2025 · South Africa</button>
+      </div>
+    </div>
+
+    <div id="panel-monitor" class="tab-panel active">
+    <div class="filter-bar">
+      <div class="filter-box">
+        <span class="filter-label">Your Filters:</span>
+        <div class="filter-chip"><div class="chip-dot"></div> All Sources</div>
+        <div class="filter-chip"><div class="chip-dot lighter"></div> businesslive.co.za</div>
+      </div>
+      <div class="type-select-wrap">
+        <span class="type-label">Type:</span>
+        <select class="type-select">
+          <option>recommendation_level</option>
+          <option>overtone_type</option>
+          <option>sentiment</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-top">
+        <div class="chart-legend-row" id="monitor-legend" style="margin-bottom:0;">
+          <div class="legend-line"></div>
+          Relevance Score (predicted_performance)
+          <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a point to see why Overtone scored it</span>
+        </div>
+        <div class="chart-toggle">
+          <button class="chart-toggle-btn active" id="toggle-score" onclick="switchMonitorView('score')">Score</button>
+          <button class="chart-toggle-btn" id="toggle-moments" onclick="switchMonitorView('moments')">⚡ Moments</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="monitor-svg" width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible"></svg>
+        <svg id="monitor-moments-svg" width="100%" height="210" viewBox="0 0 880 210" preserveAspectRatio="none" style="overflow:visible;display:none;"></svg>
+      </div>
+      <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head">
+        <div class="th"></div>
+        <div class="th">Headline</div>
+        <div class="th">URL</div>
+        <div class="th">Date Published</div>
+        <div class="th">source_name</div>
+        <div class="th">recommendation_level</div>
+      </div>
+      
+      <div class="table-row" data-story="0" onclick="triggerRow(event,0)">
+        <div class="row-num">1.</div>
+        <div class="row-headline">Standard Bank closes in on most valuable African ban…</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
+        <div class="row-date">1 Apr 2025</div>
+        <div class="row-source">businesslive.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill high" style="width:95%"></div></div>
+          0.1458677
+        </div>
+      </div>
+      <div class="table-row" data-story="1" onclick="triggerRow(event,1)">
+        <div class="row-num">2.</div>
+        <div class="row-headline">Eskom warns Stage 4 blackouts may be implemented thi…</div>
+        <div class="row-url">www.enca.com/news-top-stories/eskom-…</div>
+        <div class="row-date">31 Jan 2025</div>
+        <div class="row-source">enca.com</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:41%"></div></div>
+          0.0642717
+        </div>
+      </div>
+      <div class="table-row" data-story="2" onclick="triggerRow(event,2)">
+        <div class="row-num">3.</div>
+        <div class="row-headline">February sales of VW and BMW electric cars top Tesla…</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
+        <div class="row-date">24 Mar 2025</div>
+        <div class="row-source">businesslive.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:35%"></div></div>
+          0.0551584
+        </div>
+      </div>
+      <div class="table-row" data-story="3" onclick="triggerRow(event,3)">
+        <div class="row-num">4.</div>
+        <div class="row-headline">DRDGold reaps benefits of higher gold price</div>
+        <div class="row-url">www.businesslive.co.za/bd/companies/…</div>
+        <div class="row-date">6 Feb 2025</div>
+        <div class="row-source">businesslive.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
+          0.0500944
+        </div>
+      </div>
+      <div class="table-row" data-story="4" onclick="triggerRow(event,4)">
+        <div class="row-num">5.</div>
+        <div class="row-headline">Vodacom's Maziv deal gets makeover ahead of crucial …</div>
+        <div class="row-url">techcentral.co.za/vodacoms-maziv-dea…</div>
+        <div class="row-date">18 Jul 2025</div>
+        <div class="row-source">techcentral.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
+          0.0497451
+        </div>
+      </div>
+      <div class="table-row" data-story="5" onclick="triggerRow(event,5)">
+        <div class="row-num">6.</div>
+        <div class="row-headline">South Africa renews business-government pact to boos…</div>
+        <div class="row-url">www.moneyweb.co.za/news/south-africa…</div>
+        <div class="row-date">28 Jan 2026</div>
+        <div class="row-source">moneyweb.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:32%"></div></div>
+          0.0496706
+        </div>
+      </div>
+      <div class="table-row" data-story="6" onclick="triggerRow(event,6)">
+        <div class="row-num">7.</div>
+        <div class="row-headline">Minerals Council advocates for electricity grid dere…</div>
+        <div class="row-url">www.sabcnews.com/sabcnews/minerals-c…</div>
+        <div class="row-date">8 Oct 2025</div>
+        <div class="row-source">sabcnews.com</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:31%"></div></div>
+          0.0481966
+        </div>
+      </div>
+      <div class="table-row" data-story="7" onclick="triggerRow(event,7)">
+        <div class="row-num">8.</div>
+        <div class="row-headline">Green talent makes for a red-hot Nursery</div>
+        <div class="row-url">www.citizen.co.za/sport/horses/green…</div>
+        <div class="row-date">24 Mar 2025</div>
+        <div class="row-source">citizen.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
+          0.0475762
+        </div>
+      </div>
+      <div class="table-row" data-story="8" onclick="triggerRow(event,8)">
+        <div class="row-num">9.</div>
+        <div class="row-headline">BROKERS' NOTES: Buy Curro, sell Mr Price</div>
+        <div class="row-url">www.businesslive.co.za/fm/money-and-…</div>
+        <div class="row-date">29 May 2025</div>
+        <div class="row-source">businesslive.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
+          0.0473008
+        </div>
+      </div>
+      <div class="table-row" data-story="9" onclick="triggerRow(event,9)">
+        <div class="row-num">10.</div>
+        <div class="row-headline">SA's R1 trillion energy bet: Why CFOs can't wait unt…</div>
+        <div class="row-url">cbn.co.za/industry-news/renewable-en…</div>
+        <div class="row-date">8 Oct 2025</div>
+        <div class="row-source">cbn.co.za</div>
+        <div class="row-score">
+          <div class="score-bar-track"><div class="score-bar-fill mid" style="width:30%"></div></div>
+          0.0472744
+        </div>
+      </div>
+    </div>
+    </div><!-- /panel-monitor -->
+
+    <!-- ══ MOMENTS PANEL ══════════════════════════ -->
+    <div id="panel-moments" class="tab-panel">
+
+      <!-- Volume timeline chart -->
+      <div class="chart-card">
+        <div class="chart-legend-row moments-legend">
+          <span class="legend-swatch-item">
+            <span class="legend-swatch" style="background:#1a8a52;"></span> Moment burst
+          </span>
+          <span class="legend-swatch-item">
+            <span class="legend-swatch" style="background:rgba(108,99,224,0.3);"></span> Baseline activity
+          </span>
+          <span class="legend-hint">— click a moment bar to explore it</span>
+        </div>
+        <div class="moments-chart-wrap">
+          <svg id="moments-svg" width="100%" height="200" viewBox="0 0 880 200" preserveAspectRatio="none" style="overflow:visible"></svg>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Market: South Africa</div>
+      </div>
+
+      <!-- Two-col layout: moment list + detail -->
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;">
+
+        <!-- LEFT: moment list -->
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Detected moments</div>
+          <div id="moment-list" class="moment-list"></div>
+        </div>
+
+        <!-- RIGHT: moment detail -->
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Moment detail</div>
+          <div id="moment-detail">
+            <div class="empty-state">
+              <div class="empty-state-icon">⚡</div>
+              <div class="empty-state-title">Select a moment to explore it</div>
+              <div class="empty-state-body">Each moment shows which articles drove the burst and what they had in common.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /panel-moments -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- HOVER TOOLTIP (graph points only) -->
+<div class="hover-tip" id="hover-tip">
+  <div class="hover-tip-headline" id="ht-headline"></div>
+  <div class="hover-tip-score" id="ht-score"></div>
+  <div id="ht-signal"></div>
+  <div class="hover-tip-hint">Click to see full breakdown</div>
+</div>
+
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup" id="popup">
+    <div class="popup-caret" id="popup-caret"></div>
+    <div class="popup-stripe">
+      <div class="popup-stripe-left">
+        <span class="popup-why-label">Why this score</span>
+        <span class="popup-score-badge" id="pop-score"></span>
+      </div>
+      <button class="popup-close" onclick="closePopup()">✕</button>
+    </div>
+    <div class="popup-head">
+      <div class="popup-source" id="pop-source"></div>
+      <div class="popup-headline" id="pop-headline"></div>
+    </div>
+    <div class="popup-verdict" id="pop-verdict"></div>
+    <div class="popup-signals">
+      <div class="signals-title">Scoring signals</div>
+      <div id="pop-signals"></div>
+    </div>
+    <div class="popup-concepts" id="pop-concepts"></div>
+    <div class="popup-footer">
+      <a class="pfooter-btn primary" id="pop-deepdive" href="#" target="_blank">Article Deepdive →</a>
+      <button class="pfooter-btn" onclick="closePopup()">Did we get it wrong?</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOMENT POPUP -->
+<div class="popup-overlay" id="moment-popup-overlay">
+  <div class="popup" id="moment-popup">
+    <div class="popup-caret" id="moment-popup-caret"></div>
+    <div class="moment-popup-stripe" id="moment-stripe">
+      <div class="popup-stripe-left">
+        <span class="popup-why-label">⚡ Moment detected</span>
+        <span class="popup-score-badge" id="mp-sentiment"></span>
+      </div>
+      <button class="popup-close" onclick="closeMomentPopup()">✕</button>
+    </div>
+    <div class="moment-stats-grid" id="mp-stats"></div>
+    <div class="moment-articles-title">Articles in this moment</div>
+    <div id="mp-stories"></div>
+  </div>
+</div>
+
+<script>
+const stories = [{"id": 0, "headline": "Standard Bank closes in on most valuable African bank spot", "source": "businesslive.co.za", "date": "1 Apr 2025", "url": "https://www.businesslive.co.za/bd/companies/financial-services/2025-04-01-standard-bank-closes-in-on-most-valuable-african-bank-spot/", "score": 0.1458677, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard News content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 1, "headline": "Eskom warns Stage 4 blackouts may be implemented this weekend", "source": "enca.com", "date": "31 Jan 2025", "url": "https://www.enca.com/news-top-stories/eskom-warns-stage-4-blackouts-may-be-implemented-weekend", "score": 0.0642717, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. enca.com rarely publishes Reporting Pieces content (7% of their articles, they mostly cover Standard News at 57%)", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 2, "headline": "February sales of VW and BMW electric cars top Tesla's EVs", "source": "businesslive.co.za", "date": "24 Mar 2025", "url": "https://www.businesslive.co.za/bd/companies/2025-03-24-february-sales-of-vw-and-bmw-electric-cars-top-teslas-evs/", "score": 0.0551584, "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 0% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)", "signals": [{"name": "Tone", "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).", "badge": "Neutral", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 3, "headline": "DRDGold reaps benefits of higher gold price", "source": "businesslive.co.za", "date": "6 Feb 2025", "url": "https://www.businesslive.co.za/bd/companies/mining/2025-02-06-drdgold-reaps-benefits-of-higher-gold-price/", "score": 0.0500944, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard News content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 4, "headline": "Vodacom's Maziv deal gets makeover ahead of crucial hearing", "source": "techcentral.co.za", "date": "18 Jul 2025", "url": "https://techcentral.co.za/vodacoms-maziv-deal-makeover-hearing/267031/", "score": 0.0497451, "verdict": "Predicted performance is in the top 0% of articles in the last 30 days. techcentral.co.za commonly publishes Reporting Pieces content (67% of their articles).", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 0% of articles in the last 30 days.", "badge": "Top 0%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 5, "headline": "South Africa renews business-government pact to boost growth", "source": "moneyweb.co.za", "date": "28 Jan 2026", "url": "https://www.moneyweb.co.za/news/south-africa/south-africa-renews-business-government-pact-to-boost-growth/", "score": 0.0496706, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Reporting Pieces content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 6, "headline": "Minerals Council advocates for electricity grid deregulations", "source": "sabcnews.com", "date": "8 Oct 2025", "url": "https://www.sabcnews.com/sabcnews/minerals-council-advocates-for-electricity-grid-deregulations/", "score": 0.0481966, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Interview Stories content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 7, "headline": "Green talent makes for a red-hot Nursery", "source": "citizen.co.za", "date": "24 Mar 2025", "url": "https://www.citizen.co.za/sport/horses/green-talent-makes-for-a-red-hot-nursery/", "score": 0.0475762, "verdict": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Happy tone is unusual for Standard News content in the last 30 days (typical: Informational).", "badge": "Happy", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 8, "headline": "BROKERS' NOTES: Buy Curro, sell Mr Price", "source": "businesslive.co.za", "date": "29 May 2025", "url": "https://www.businesslive.co.za/fm/money-and-investing/2025-05-29-brokers-notes-buy-curro-sell-mr-price/", "score": 0.0473008, "verdict": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational). Predicted performance is in the top 1% of articles in the last 30 days. businesslive.co.za rarely publishes Mid Non-News content (9% of their articles, they mostly cover Standard News at 28%)", "signals": [{"name": "Tone", "detail": "Neutral tone is unusual for Mid Non-News content in the last 30 days (typical: Informational).", "badge": "Neutral", "color": "amber", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}, {"id": 9, "headline": "SA's R1 trillion energy bet: Why CFOs can't wait until 2030", "source": "cbn.co.za", "date": "8 Oct 2025", "url": "https://cbn.co.za/industry-news/renewable-energy-alternative-energy-solutions-news/sas-r1-trillion-energy-bet-why-cfos-cant-wait-until-2030/", "score": 0.0472744, "verdict": "Predicted performance is in the top 1% of articles in the last 30 days.", "signals": [{"name": "Tone", "detail": "Informational tone is typical for Standard Opinion content in the last 30 days.", "badge": "Informational", "color": "grey", "icon": "🌡️"}, {"name": "Brand Safety", "detail": "No brand safety flags detected.", "badge": "No flags", "color": "green", "icon": "🛡️"}, {"name": "Audience Concepts", "detail": "Top positive concepts: MTN Group, South Asia, Standard Bank.", "badge": "MTN Group (High)", "color": "purple", "icon": "📌"}, {"name": "Predicted Performance", "detail": "Predicted performance is in the top 1% of articles in the last 30 days.", "badge": "Top 1%", "color": "green", "icon": "📈"}], "concepts": [], "matched": []}];
+
+let activeId = null, activeSrc = null;
+let activeMomentPopup = null;
+
+/* ══════════════════════════════════════════════
+   MONITOR CHART — chronological line + area
+══════════════════════════════════════════════ */
+function renderMonitorChart() {
+  const svg = document.getElementById('monitor-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W=880, H=210, padL=10, padR=10, padT=10, padB=28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  // Sort stories chronologically using the same parser as buildTimeline
+  const monthMap = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,
+                     Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2] || new Date().getFullYear()), monthMap[p[1]] - 1, parseInt(p[0]));
+  }
+  const sorted = [...stories].sort((a,b) => parseDate(a.date) - parseDate(b.date));
+  const n = sorted.length;
+  const maxScore = Math.max(...sorted.map(s => s.score));
+  const step = plotW / (n - 1);
+
+  function cx(i) { return padL + i * step; }
+  function cy(score) { return padT + plotH - (score / maxScore) * plotH * 0.9; }
+
+  // Gradient def
+  const ns = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(ns, 'defs');
+  const grad = document.createElementNS(ns, 'linearGradient');
+  grad.setAttribute('id','monitorAreaG'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s0 = document.createElementNS(ns,'stop');
+  s0.setAttribute('offset','0%'); s0.setAttribute('stop-color','#6c63e0'); s0.setAttribute('stop-opacity','0.15');
+  const s1 = document.createElementNS(ns,'stop');
+  s1.setAttribute('offset','100%'); s1.setAttribute('stop-color','#6c63e0'); s1.setAttribute('stop-opacity','0.01');
+  grad.appendChild(s0); grad.appendChild(s1); defs.appendChild(grad); svg.appendChild(defs);
+
+  // Grid lines
+  [0.25, 0.5, 0.75, 1].forEach(frac => {
+    const y = padT + plotH - frac * plotH * 0.9;
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1', padL); line.setAttribute('x2', W-padR);
+    line.setAttribute('y1', y); line.setAttribute('y2', y);
+    line.setAttribute('stroke','#e4e4ea'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+  });
+
+  // Area fill polygon
+  const baseY = padT + plotH;
+  const polyPts = [
+    `${cx(0)},${baseY}`,
+    ...sorted.map((s,i) => `${cx(i)},${cy(s.score)}`),
+    `${cx(n-1)},${baseY}`
+  ].join(' ');
+  const poly = document.createElementNS(ns,'polygon');
+  poly.setAttribute('points', polyPts);
+  poly.setAttribute('fill','url(#monitorAreaG)');
+  svg.appendChild(poly);
+
+  // Line
+  const linePts = sorted.map((s,i) => `${cx(i)},${cy(s.score)}`).join(' ');
+  const polyline = document.createElementNS(ns,'polyline');
+  polyline.setAttribute('points', linePts);
+  polyline.setAttribute('fill','none'); polyline.setAttribute('stroke','#6c63e0');
+  polyline.setAttribute('stroke-width','2'); polyline.setAttribute('stroke-linecap','round');
+  polyline.setAttribute('stroke-linejoin','round');
+  svg.appendChild(polyline);
+
+  // Points + date labels
+  sorted.forEach((s, i) => {
+    const x = cx(i), y = cy(s.score);
+    const isHigh   = s.score >= 0.08;
+    const stroke   = isHigh ? '#1a7a4a' : '#6c63e0';
+    const r        = isHigh ? '5.5' : '5';
+    const sw       = isHigh ? '2.5' : '2';
+
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('class','graph-point');
+    circle.setAttribute('cx', x); circle.setAttribute('cy', y);
+    circle.setAttribute('r', r);
+    circle.setAttribute('fill','#fff'); circle.setAttribute('stroke', stroke);
+    circle.setAttribute('stroke-width', sw);
+    circle.setAttribute('data-story', s.id);
+    circle.addEventListener('click', e => triggerGraph(e, s.id));
+    circle.addEventListener('mouseenter', e => showHoverTip(e, s.id));
+    circle.addEventListener('mousemove',  e => showHoverTip(e, s.id));
+    circle.addEventListener('mouseleave', hideHoverTip);
+    svg.appendChild(circle);
+
+    // Date label — trim year for brevity
+    const dateLabel = s.date.replace(/ \d{4}$/, '');
+    const text = document.createElementNS(ns,'text');
+    text.setAttribute('x', x); text.setAttribute('y', H - 4);
+    text.setAttribute('fill','#9898b0'); text.setAttribute('font-size','9');
+    text.setAttribute('font-family','Inter'); text.setAttribute('text-anchor','middle');
+    text.textContent = dateLabel;
+    svg.appendChild(text);
+  });
+}
+
+const monitorLegends = {
+  score: '<div class="legend-line"></div> Relevance Score (predicted_performance) <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— click a point to see why Overtone scored it</span>',
+  moments: '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#1a8a52;flex-shrink:0;"></span>Moment burst</span><span style="display:flex;align-items:center;gap:6px;margin-left:16px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(108,99,224,0.28);flex-shrink:0;"></span>Baseline activity</span><span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:auto;">— click a bar to open moment detail</span>'
+};
+
+function switchMonitorView(view) {
+  const isScore   = view === 'score';
+  document.getElementById('monitor-svg').style.display          = isScore ? '' : 'none';
+  document.getElementById('monitor-moments-svg').style.display  = isScore ? 'none' : '';
+  document.getElementById('toggle-score').className   = 'chart-toggle-btn' + (isScore ? ' active' : '');
+  document.getElementById('toggle-moments').className = 'chart-toggle-btn' + (!isScore ? ' active moments' : '');
+  document.getElementById('monitor-legend').innerHTML = monitorLegends[view];
+  if (!isScore) renderMonitorMomentsChart();
+}
+
+function renderMonitorMomentsChart() {
+  const svg = document.getElementById('monitor-moments-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W=880, H=210, padL=32, padR=16, padT=18, padB=28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const ns = 'http://www.w3.org/2000/svg';
+  const tl = timeline;
+  if (!tl.length) return;
+  const maxCount = Math.max(...tl.map(t => t.count), 1);
+  const barW = Math.max(2, Math.floor(plotW / tl.length) - 2);
+
+  // Grid lines + y-axis labels
+  for (let v = 0; v <= maxCount; v++) {
+    const y = padT + plotH - (v / maxCount) * plotH;
+    const gl = document.createElementNS(ns, 'line');
+    gl.setAttribute('x1', padL); gl.setAttribute('x2', W - padR);
+    gl.setAttribute('y1', y);    gl.setAttribute('y2', y);
+    gl.setAttribute('stroke', '#e4e4ea'); gl.setAttribute('stroke-width', '1');
+    svg.appendChild(gl);
+    if (v > 0) {
+      const lbl = document.createElementNS(ns, 'text');
+      lbl.setAttribute('x', padL - 4); lbl.setAttribute('y', y + 4);
+      lbl.setAttribute('fill', '#9898b0'); lbl.setAttribute('font-size', '9');
+      lbl.setAttribute('font-family', 'Inter'); lbl.setAttribute('text-anchor', 'end');
+      lbl.textContent = v;
+      svg.appendChild(lbl);
+    }
+  }
+
+  // Moment shaded regions
+  moments.forEach(m => {
+    const si = tl.findIndex(t => t.date.toISOString().slice(0,10) === m.spikeDates[0]);
+    const ei = tl.findIndex(t => t.date.toISOString().slice(0,10) === m.spikeDates[m.spikeDates.length-1]);
+    if (si < 0) return;
+    const x1 = padL + si * (plotW / tl.length) - 2;
+    const x2 = padL + (ei + 1) * (plotW / tl.length) + 2;
+    const shade = document.createElementNS(ns, 'rect');
+    shade.setAttribute('x', x1); shade.setAttribute('y', padT);
+    shade.setAttribute('width', x2 - x1); shade.setAttribute('height', plotH);
+    shade.setAttribute('fill', 'rgba(26,138,82,0.08)');
+    shade.setAttribute('stroke', 'rgba(26,138,82,0.4)'); shade.setAttribute('stroke-width', '1');
+    shade.setAttribute('stroke-dasharray', '3,3');
+    svg.appendChild(shade);
+  });
+
+  // Bars
+  tl.forEach((t, i) => {
+    const x  = padL + i * (plotW / tl.length) + (plotW / tl.length - barW) / 2;
+    const bh = t.count > 0 ? Math.max(3, (t.count / maxCount) * plotH) : 0;
+    const y  = padT + plotH - bh;
+    const isMoment = momentDateSet.has(t.date.toISOString().slice(0,10));
+
+    if (t.count > 0) {
+      const bar = document.createElementNS(ns, 'rect');
+      bar.setAttribute('x', x); bar.setAttribute('y', y);
+      bar.setAttribute('width', barW); bar.setAttribute('height', bh);
+      bar.setAttribute('fill', isMoment ? '#1a8a52' : 'rgba(108,99,224,0.28)');
+      bar.setAttribute('rx', '2');
+      if (isMoment) {
+        bar.style.cursor = 'pointer';
+        const m = moments.find(mo => mo.spikeDates.includes(t.date.toISOString().slice(0,10)));
+        bar.addEventListener('click', e => { e.stopPropagation(); openMomentPopup(m, bar); });
+      }
+      svg.appendChild(bar);
+    }
+
+    // x-axis labels — first, last, and moment peak dates only
+    const labelDates = new Set([
+      tl[0].dateStr,
+      tl[tl.length - 1].dateStr,
+      ...moments.map(m => m.peakDate)
+    ]);
+    if (labelDates.has(t.dateStr)) {
+      const lbl = document.createElementNS(ns, 'text');
+      lbl.setAttribute('x', padL + i * (plotW / tl.length) + (plotW / tl.length) / 2);
+      lbl.setAttribute('y', H - 4);
+      lbl.setAttribute('fill', momentDateSet.has(t.date.toISOString().slice(0,10)) ? '#1a8a52' : '#9898b0');
+      lbl.setAttribute('font-size', '9'); lbl.setAttribute('font-family', 'Inter');
+      lbl.setAttribute('text-anchor', 'middle');
+      lbl.textContent = t.dateStr;
+      svg.appendChild(lbl);
+    }
+  });
+
+  // Moment annotation labels
+  moments.forEach(m => {
+    const peakIdx = tl.findIndex(t => t.dateStr === m.peakDate);
+    if (peakIdx < 0) return;
+    const cx = padL + peakIdx * (plotW / tl.length) + (plotW / tl.length) / 2;
+    const lw = 110, lh = 20;
+    const lx = Math.min(Math.max(cx - lw / 2, padL), W - padR - lw);
+    const bg = document.createElementNS(ns, 'rect');
+    bg.setAttribute('x', lx); bg.setAttribute('y', padT);
+    bg.setAttribute('width', lw); bg.setAttribute('height', lh);
+    bg.setAttribute('fill', 'rgba(234,246,240,0.95)'); bg.setAttribute('rx', '4');
+    bg.setAttribute('stroke', '#1a8a52'); bg.setAttribute('stroke-width', '1');
+    svg.appendChild(bg);
+    const lbl = document.createElementNS(ns, 'text');
+    lbl.setAttribute('x', lx + lw / 2); lbl.setAttribute('y', padT + 13);
+    lbl.setAttribute('fill', '#1a8a52'); lbl.setAttribute('font-size', '10');
+    lbl.setAttribute('font-family', 'Inter'); lbl.setAttribute('text-anchor', 'middle');
+    lbl.setAttribute('font-weight', '500');
+    lbl.textContent = '⚡ Moment · ' + m.peakDate;
+    svg.appendChild(lbl);
+  });
+}
+
+function openPopup(id, anchorEl, src) {
+  closeMomentPopup();
+  const s = stories.find(x => x.id === id);
+  activeId = id; activeSrc = src;
+  document.getElementById('pop-score').textContent = s.score.toFixed(7);
+  document.getElementById('pop-source').textContent = s.source + ' · ' + s.date;
+  document.getElementById('pop-headline').textContent = s.headline;
+  document.getElementById('pop-verdict').textContent = s.verdict;
+  document.getElementById('pop-deepdive').href = s.url;
+
+  document.getElementById('pop-signals').innerHTML = s.signals.map(sig => `
+    <div class="signal-row-item">
+      <span class="sig-icon">${sig.icon}</span>
+      <div class="sig-text">
+        <div class="sig-name">${sig.name}</div>
+        <div class="sig-detail">${sig.detail}</div>
+      </div>
+      <span class="sig-badge badge-${sig.color}">${sig.badge}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('pop-concepts').innerHTML = s.concepts.length
+    ? s.concepts.map(c => `<span class="concept-pill ${s.matched.includes(c)?'matched':''}">${c}</span>`).join('')
+    : '';
+
+  const popup = document.getElementById('popup');
+  popup.className = 'popup';
+  positionPopup(popup, anchorEl);
+  requestAnimationFrame(() => popup.classList.add('visible'));
+}
+
+function positionPopup(popup, anchor) {
+  const ov = document.getElementById('popup-overlay').getBoundingClientRect();
+  const an = anchor.getBoundingClientRect();
+  const W = 360, GAP = 10, estH = 460;
+  let left = an.left - ov.left;
+  if (left + W > ov.width - 8) left = ov.width - W - 8;
+  if (left < 8) left = 8;
+  let top, caretBottom = false;
+  if (an.top - estH - GAP > 60) { top = an.top - ov.top - estH - GAP; }
+  else { top = an.bottom - ov.top + GAP; caretBottom = true; popup.classList.add('caret-bottom'); }
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  const caretLeft = Math.max(16, Math.min(W - 30, an.left - ov.left - left + an.width/2 - 6));
+  document.getElementById('popup-caret').style.left = caretLeft + 'px';
+}
+
+function closePopup() {
+  document.getElementById('popup').classList.remove('visible');
+  document.querySelectorAll('.table-row.active, .graph-point.active').forEach(el => el.classList.remove('active'));
+  activeId = null;
+}
+
+function triggerRow(e, id) {
+  e.stopPropagation();
+  const row = e.currentTarget;
+  if (activeId === id && activeSrc === 'row') { closePopup(); return; }
+  closePopup();
+  row.classList.add('active');
+  const pt = document.querySelector(`.graph-point[data-story="${id}"]`);
+  if (pt) pt.classList.add('active');
+  openPopup(id, row, 'row');
+}
+
+function triggerGraph(e, id) {
+  e.stopPropagation();
+  const pt = e.currentTarget;
+  if (activeId === id && activeSrc === 'graph') { closePopup(); return; }
+  closePopup();
+  pt.classList.add('active');
+  const row = document.querySelector(`.table-row[data-story="${id}"]`);
+  if (row) { row.classList.add('active'); row.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  openPopup(id, pt, 'graph');
+}
+
+document.addEventListener('click', e => {
+  const sp = document.getElementById('popup');
+  const mp = document.getElementById('moment-popup');
+  if (activeId !== null && sp && !sp.contains(e.target)) closePopup();
+  if (activeMomentPopup !== undefined && activeMomentPopup !== null && mp && !mp.contains(e.target)) closeMomentPopup();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePopup(); closeMomentPopup(); }
+});
+
+/* ── HOVER TOOLTIP LOGIC ── */
+const hoverTip = document.getElementById('hover-tip');
+
+function getMostNotableSignal(s) {
+  // Priority: red → amber → green notable → purple → grey
+  const priority = ['red','amber','green','purple','grey'];
+  for (const color of priority) {
+    const sig = s.signals.find(sg => sg.color === color);
+    if (sig) return sig;
+  }
+  return s.signals[0];
+}
+
+function showHoverTip(e, id) {
+  const s = stories.find(x => x.id === id);
+  const sig = getMostNotableSignal(s);
+
+  document.getElementById('ht-headline').textContent = s.headline;
+  document.getElementById('ht-score').textContent = 'Audience relevance score: ' + s.score.toFixed(4);
+  document.getElementById('ht-signal').innerHTML =
+    `<span class="hover-tip-signal ${sig.color}">${sig.icon} ${sig.badge}</span>`;
+
+  // Position near cursor
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  hoverTip.style.left = Math.min(x, window.innerWidth - 280) + 'px';
+  hoverTip.style.top = y + 'px';
+  hoverTip.classList.add('visible');
+}
+
+function hideHoverTip() {
+  hoverTip.classList.remove('visible');
+}
+
+// Wire up hover events to all graph points
+document.querySelectorAll('.graph-point').forEach(pt => {
+  pt.addEventListener('mouseenter', e => showHoverTip(e, parseInt(pt.dataset.story)));
+  pt.addEventListener('mousemove',  e => showHoverTip(e, parseInt(pt.dataset.story)));
+  pt.addEventListener('mouseleave', hideHoverTip);
+});
+
+/* ══════════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const st = document.getElementById('subtab-' + name);
+  const pn = document.getElementById('panel-' + name);
+  if (st) st.classList.add('active');
+  if (pn) pn.classList.add('active');
+  if (name === 'moments') renderMomentsChart();
+}
+
+/* ══════════════════════════════════════════════
+   MOMENTS DATA
+   Replace with real BQ-derived data when ready.
+   Shape must match: { dateStr, count, storyIds, isMoment }
+   Moments shape: { label, peakDate, windowStr, articleCount,
+                    strength, zScore, sentiment, storyIds }
+══════════════════════════════════════════════ */
+
+// Build timeline from stories data (mirrors data.py get_timeline logic)
+function buildTimeline(storiesArr) {
+  const monthMap = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6,
+                     Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2]), monthMap[p[1]] - 1, parseInt(p[0]));
+  }
+  const buckets = {};
+  storiesArr.forEach(s => {
+    const d = parseDate(s.date);
+    const key = d.toISOString().slice(0,10);
+    if (!buckets[key]) buckets[key] = { date: d, count: 0, scoreSum: 0, storyIds: [] };
+    buckets[key].count++;
+    buckets[key].scoreSum += s.score;
+    buckets[key].storyIds.push(s.id);
+  });
+  const keys = Object.keys(buckets).sort();
+  if (!keys.length) return [];
+  const start = new Date(keys[0]), end = new Date(keys[keys.length-1]);
+  const timeline = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    const key = d.toISOString().slice(0,10);
+    const b   = buckets[key] || { count:0, scoreSum:0, storyIds:[] };
+    const dd  = new Date(d);
+    timeline.push({
+      date: dd,
+      dateStr: dd.toLocaleDateString('en-GB',{day:'numeric',month:'short'}),
+      count: b.count, scoreSum: b.scoreSum, storyIds: b.storyIds
+    });
+  }
+  return timeline;
+}
+
+// Z-score moment detection (mirrors data.py detect_moments logic)
+function detectMoments(timeline, window=3, threshold=1.5, minCount=2) {
+  if (timeline.length < window+1) return [];
+  const spikeDays = [];
+  for (let i = window; i < timeline.length; i++) {
+    const baseline = timeline.slice(i-window, i).map(t => t.count);
+    const mean = baseline.reduce((a,b)=>a+b,0) / baseline.length;
+    const std  = Math.sqrt(baseline.reduce((a,b)=>a+(b-mean)**2,0)/baseline.length);
+    const z    = std === 0 ? 0 : (timeline[i].count - mean) / std;
+    const isSpike = (std === 0 ? timeline[i].count >= minCount : z >= threshold) && timeline[i].count >= minCount;
+    if (isSpike) spikeDays.push({ ...timeline[i], z: Math.round(z*100)/100 });
+  }
+  if (!spikeDays.length) return [];
+  const windows = [];
+  let cur = [spikeDays[0]];
+  for (let i=1; i<spikeDays.length; i++) {
+    const gap = (spikeDays[i].date - cur[cur.length-1].date) / 86400000;
+    if (gap <= 1) cur.push(spikeDays[i]);
+    else { windows.push(cur); cur = [spikeDays[i]]; }
+  }
+  windows.push(cur);
+  return windows.map(w => {
+    const allIds = [...new Set(w.flatMap(d => d.storyIds))];
+    const strength = allIds.reduce((a,id) => a + (stories.find(s=>s.id===id)?.score||0), 0);
+    const peak = w.reduce((a,b) => b.count > a.count ? b : a);
+    const tones = allIds.flatMap(id => (stories.find(s=>s.id===id)?.signals||[])
+      .filter(sg=>sg.name==='Tone').map(sg=>sg.color));
+    const pos = tones.filter(c=>c==='green').length;
+    const neg = tones.filter(c=>c==='red').length;
+    const sentiment = neg > pos ? 'negative' : pos > 0 && neg===0 ? 'positive' : 'mixed';
+    const startStr = w[0].dateStr, endStr = w[w.length-1].dateStr;
+    const windowStr = startStr === endStr ? startStr : startStr + ' – ' + endStr;
+    return {
+      label: 'Coverage burst · ' + peak.dateStr,
+      peakDate: peak.dateStr,
+      windowStr,
+      articleCount: w.reduce((a,d)=>a+d.count,0),
+      strength: Math.round(strength*10000)/10000,
+      zScore: Math.max(...w.map(d=>d.z)),
+      sentiment,
+      storyIds: allIds,
+      spikeDates: w.map(d => d.date.toISOString().slice(0,10))
+    };
+  });
+}
+
+const timeline = buildTimeline(stories);
+const moments  = detectMoments(timeline);
+
+// Build set of moment dates for bar coloring
+const momentDateSet = new Set(moments.flatMap(m => m.spikeDates));
+
+/* ══════════════════════════════════════════════
+   MOMENTS CHART (SVG bar chart)
+══════════════════════════════════════════════ */
+function renderMomentsChart() {
+  const svg    = document.getElementById('moments-svg');
+  if (!svg || !timeline.length) return;
+  svg.innerHTML = '';
+  const W=880, H=180, padL=32, padR=16, padT=12, padB=28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const maxCount = Math.max(...timeline.map(t=>t.count), 1);
+  const barW = Math.max(2, Math.floor(plotW / timeline.length) - 2);
+
+  // Grid lines
+  for (let v=0; v<=maxCount; v++) {
+    const y = padT + plotH - (v/maxCount)*plotH;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', padL); line.setAttribute('x2', W-padR);
+    line.setAttribute('y1', y);    line.setAttribute('y2', y);
+    line.setAttribute('stroke','#e4e4ea'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+    if (v > 0) {
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x', padL-4); lbl.setAttribute('y', y+4);
+      lbl.setAttribute('fill','#9898b0'); lbl.setAttribute('font-size','9');
+      lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','end');
+      lbl.textContent = v;
+      svg.appendChild(lbl);
+    }
+  }
+
+  // Moment shaded regions
+  moments.forEach(m => {
+    const startIdx = timeline.findIndex(t => t.date.toISOString().slice(0,10) === m.spikeDates[0]);
+    const endIdx   = timeline.findIndex(t => t.date.toISOString().slice(0,10) === m.spikeDates[m.spikeDates.length-1]);
+    if (startIdx < 0) return;
+    const x1 = padL + startIdx * (plotW / timeline.length) - 2;
+    const x2 = padL + (endIdx+1) * (plotW / timeline.length) + 2;
+    const shade = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    shade.setAttribute('x', x1); shade.setAttribute('y', padT);
+    shade.setAttribute('width', x2-x1); shade.setAttribute('height', plotH);
+    shade.setAttribute('fill','rgba(26,138,82,0.08)');
+    shade.setAttribute('stroke','rgba(26,138,82,0.35)'); shade.setAttribute('stroke-width','1');
+    shade.setAttribute('stroke-dasharray','3,3');
+    svg.appendChild(shade);
+  });
+
+  // Bars
+  timeline.forEach((t, i) => {
+    const x   = padL + i * (plotW / timeline.length) + (plotW/timeline.length - barW)/2;
+    const bh  = t.count > 0 ? Math.max(3, (t.count/maxCount)*plotH) : 0;
+    const y   = padT + plotH - bh;
+    const isMoment = momentDateSet.has(t.date.toISOString().slice(0,10));
+    const fill = isMoment ? '#1a8a52' : 'rgba(108,99,224,0.28)';
+
+    if (t.count > 0) {
+      const bar = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      bar.setAttribute('x', x); bar.setAttribute('y', y);
+      bar.setAttribute('width', barW); bar.setAttribute('height', bh);
+      bar.setAttribute('fill', fill); bar.setAttribute('rx','2');
+      bar.style.cursor = isMoment ? 'pointer' : 'default';
+      if (isMoment) {
+        const m = moments.find(mo => mo.spikeDates.includes(t.date.toISOString().slice(0,10)));
+        bar.addEventListener('click', e => { e.stopPropagation(); openMomentPopup(m, bar); });
+      }
+      svg.appendChild(bar);
+    }
+
+    // x-axis labels — first, last, and moment peak dates only
+    const labelDates = new Set([
+      timeline[0].dateStr,
+      timeline[timeline.length - 1].dateStr,
+      ...moments.map(m => m.peakDate)
+    ]);
+    if (labelDates.has(t.dateStr)) {
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x', padL + i * (plotW / timeline.length) + (plotW / timeline.length) / 2);
+      lbl.setAttribute('y', H - 4);
+      lbl.setAttribute('fill', isMoment ? '#1a8a52' : '#9898b0');
+      lbl.setAttribute('font-size','9');
+      lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','middle');
+      lbl.textContent = t.dateStr;
+      svg.appendChild(lbl);
+    }
+  });
+
+  // ⚡ Moment annotation labels
+  moments.forEach(m => {
+    const peakIdx = timeline.findIndex(t => t.dateStr === m.peakDate);
+    if (peakIdx < 0) return;
+    const cx = padL + peakIdx * (plotW/timeline.length) + (plotW/timeline.length)/2;
+    const lw = 110, lh = 20, lx = Math.min(Math.max(cx - lw/2, padL), W-padR-lw);
+    const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    bg.setAttribute('x', lx); bg.setAttribute('y', padT);
+    bg.setAttribute('width', lw); bg.setAttribute('height', lh);
+    bg.setAttribute('fill','rgba(234,246,240,0.95)'); bg.setAttribute('rx','4');
+    bg.setAttribute('stroke','#1a8a52'); bg.setAttribute('stroke-width','1');
+    svg.appendChild(bg);
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('x', lx + lw/2); lbl.setAttribute('y', padT + 13);
+    lbl.setAttribute('fill','#1a8a52'); lbl.setAttribute('font-size','10');
+    lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','middle');
+    lbl.setAttribute('font-weight','500');
+    lbl.textContent = '⚡ Moment · ' + m.peakDate;
+    svg.appendChild(lbl);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   MOMENT CARDS (left column)
+══════════════════════════════════════════════ */
+const sentimentLabel = { positive:'Positive', negative:'Negative', mixed:'Mixed' };
+
+function renderMomentList() {
+  const list = document.getElementById('moment-list');
+  if (!list) return;
+  if (!moments.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">⚡</div>
+        <div class="empty-state-title">No moments detected yet</div>
+        <div class="empty-state-body">Moments appear when article volume spikes significantly above the baseline. This period has even daily coverage — check back with a wider date range.</div>
+      </div>`;
+    return;
+  }
+  list.innerHTML = moments.map((m, idx) => `
+    <div class="moment-card" id="mcard-${idx}" onclick="selectMomentCard(${idx})">
+      <div class="moment-card-left">
+        <div class="moment-card-title">⚡ ${m.label}</div>
+        <div class="moment-card-meta">
+          <span class="moment-pill">${m.articleCount} article${m.articleCount!==1?'s':''}</span>
+          <span class="moment-pill ${m.sentiment}">${sentimentLabel[m.sentiment]}</span>
+          <span class="moment-pill">z = ${m.zScore}</span>
+        </div>
+        <div class="moment-window">${m.windowStr}</div>
+      </div>
+      <div class="moment-card-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+let activeMomentIdx = null;
+
+function selectMomentCard(idx) {
+  document.querySelectorAll('.moment-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('mcard-'+idx)?.classList.add('active');
+  activeMomentIdx = idx;
+  renderMomentDetail(idx);
+}
+
+/* ══════════════════════════════════════════════
+   MOMENT DETAIL PANEL (right column)
+══════════════════════════════════════════════ */
+const sentimentColors = {
+  positive: { stripe:'#1a8a52', bg:'#eaf6f0', text:'#1a8a52' },
+  negative: { stripe:'#c0392b', bg:'#fdecea', text:'#c0392b' },
+  mixed:    { stripe:'#6c63e0', bg:'rgba(108,99,224,0.10)', text:'#5a52cc' }
+};
+
+function renderMomentDetail(idx) {
+  const detail = document.getElementById('moment-detail');
+  if (!detail) return;
+  const m = moments[idx];
+  const c = sentimentColors[m.sentiment];
+  const momentStories = m.storyIds.map(id => stories.find(s=>s.id===id)).filter(Boolean);
+
+  detail.innerHTML = `
+    <div style="background:${c.stripe};border-radius:8px 8px 0 0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.75);">⚡ Moment detected</span>
+      <span style="font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,0.18);padding:3px 10px;border-radius:20px;">${sentimentLabel[m.sentiment]}</span>
+    </div>
+    <div style="border:1px solid #e4e4ea;border-top:none;border-radius:0 0 8px 8px;padding:14px 16px;background:white;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        ${[['Articles',m.articleCount],['Peak date',m.peakDate],['Z-score',m.zScore]].map(([l,v])=>`
+          <div style="background:#f7f7f9;border:1px solid #e4e4ea;border-radius:6px;padding:8px 10px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#9898b0;margin-bottom:3px;">${l}</div>
+            <div style="font-size:15px;font-weight:600;color:#1a1a2e;">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        ${[['Window',m.windowStr],['Strength',m.strength]].map(([l,v])=>`
+          <div style="background:#f7f7f9;border:1px solid #e4e4ea;border-radius:6px;padding:8px 10px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#9898b0;margin-bottom:3px;">${l}</div>
+            <div style="font-size:13px;font-weight:600;color:#1a1a2e;">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9898b0;margin-bottom:8px;">Articles in this moment</div>
+      ${momentStories.map(s=>`
+        <div style="padding:8px 10px;border:1px solid #e4e4ea;border-radius:7px;margin-bottom:6px;background:#f7f7f9;cursor:pointer;"
+             onclick="openPopup(${s.id}, this, 'moment')">
+          <div style="font-size:12px;font-weight:500;color:#1a1a2e;line-height:1.35;margin-bottom:4px;">${s.headline}</div>
+          <div style="font-size:11px;color:#9898b0;">${s.source} · ${s.date}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════
+   MOMENT POPUP (from bar click)
+══════════════════════════════════════════════ */
+function openMomentPopup(m, anchorEl) {
+  closeMomentPopup();
+  const c = sentimentColors[m.sentiment];
+  document.getElementById('moment-stripe').className = 'moment-popup-stripe ' + m.sentiment;
+  document.getElementById('mp-sentiment').textContent = sentimentLabel[m.sentiment];
+
+  document.getElementById('mp-stats').innerHTML = [
+    ['Articles', m.articleCount], ['Peak', m.peakDate], ['Z-score', m.zScore],
+    ['Window', m.windowStr], ['Strength', m.strength], ['Sentiment', sentimentLabel[m.sentiment]]
+  ].map(([l,v]) => `
+    <div class="moment-stat-box">
+      <div class="moment-stat-label">${l}</div>
+      <div class="moment-stat-value">${v}</div>
+    </div>`).join('');
+
+  const momentStories = m.storyIds.map(id => stories.find(s=>s.id===id)).filter(Boolean);
+  document.getElementById('mp-stories').innerHTML = momentStories.map(s => `
+    <div class="moment-story-row" onclick="openPopup(${s.id}, this, 'mPopup')">
+      <div>
+        <div class="moment-story-headline">${s.headline}</div>
+        <div class="moment-story-meta">${s.source} · ${s.date}</div>
+      </div>
+      <span style="font-size:11px;color:#9898b0;flex-shrink:0;">›</span>
+    </div>`).join('');
+
+  const popup   = document.getElementById('moment-popup');
+  const overlay = document.getElementById('moment-popup-overlay');
+  popup.className = 'popup';
+  positionMomentPopup(popup, anchorEl, overlay);
+  requestAnimationFrame(() => popup.classList.add('visible'));
+  activeMomentPopup = m;
+}
+
+function positionMomentPopup(popup, anchor, overlay) {
+  const ov  = overlay.getBoundingClientRect();
+  const an  = anchor.getBoundingClientRect();
+  const W=360, GAP=10, estH=400;
+  let left = an.left - ov.left;
+  if (left + W > ov.width - 8) left = ov.width - W - 8;
+  if (left < 8) left = 8;
+  let top;
+  if (an.top - estH - GAP > 60) { top = an.top - ov.top - estH - GAP; }
+  else { top = an.bottom - ov.top + GAP; popup.classList.add('caret-bottom'); }
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  const caretLeft = Math.max(16, Math.min(W-30, an.left - ov.left - left + an.width/2 - 6));
+  document.getElementById('moment-popup-caret').style.left = caretLeft + 'px';
+}
+
+function closeMomentPopup() {
+  document.getElementById('moment-popup')?.classList.remove('visible');
+  activeMomentPopup = null;
+}
+
+// Init on page load
+renderMonitorChart();
+renderMomentList();
+</script>
+</body>
+</html>
