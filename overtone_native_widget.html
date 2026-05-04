@@ -51,6 +51,8 @@
   .subtab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 20px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .subtab.active { color: var(--purple); border-bottom-color: var(--purple); font-weight: 500; }
   .subtab-icon { font-size: 15px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
   .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
   .filter-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; display: flex; align-items: center; gap: 14px; }
   .filter-label { font-size: 12px; font-weight: 600; color: var(--purple); }
@@ -216,10 +218,10 @@
     <div class="page-title">Insights</div>
 
     <div class="subtabs">
-      <div class="subtab" onclick="switchTab('overview')"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
+      <div class="subtab" id="subtab-overview" onclick="switchTab('overview')"><span class="subtab-icon">📋</span><span>OVERVIEW</span></div>
       <div class="subtab active" id="subtab-monitor" onclick="switchTab('monitor')"><span class="subtab-icon">📡</span><span>MONITOR</span></div>
       <div class="subtab" id="subtab-moments" onclick="switchTab('moments')"><span class="subtab-icon">⚡</span><span>MOMENTS</span></div>
-      <div class="subtab" onclick="switchTab('articles')"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
+      <div class="subtab" id="subtab-articles" onclick="switchTab('articles')"><span class="subtab-icon">📰</span><span>ARTICLES</span></div>
       <div style="margin-left:20px;display:flex;align-items:center;gap:10px;padding-bottom:2px;">
         <input class="kw-input" placeholder="Add a Keyword" />
         <button class="date-range-btn">Jan 2025 – Oct 2025 · South Africa</button>
@@ -242,6 +244,13 @@
       </div>
     </div>
 
+    <!-- OVERVIEW placeholder -->
+    <div class="tab-panel" id="panel-overview">
+      <div style="padding:60px 0;text-align:center;color:var(--text-muted);font-size:14px;">Overview dashboard coming soon.</div>
+    </div>
+
+    <!-- MONITOR panel -->
+    <div class="tab-panel active" id="panel-monitor">
     <div class="chart-card">
       <div class="chart-legend-row">
         <div class="legend-line"></div>
@@ -375,6 +384,26 @@
         </div>
       </div>
     </div>
+    </div><!-- end panel-monitor -->
+
+    <!-- MOMENTS panel -->
+    <div class="tab-panel" id="panel-moments">
+      <div class="chart-card">
+        <div class="chart-legend-row">
+          <div class="legend-line"></div>
+          Article volume over time · ⚡ spikes = statistically significant moments
+          <span style="font-size:11px;color:var(--text-muted);font-style:italic;margin-left:4px;">— Z-score > 1.0 SD above rolling mean flagged as a Moment</span>
+        </div>
+        <div class="chart-wrap" style="padding:10px 0 0;">
+          <svg id="moments-svg" width="100%" height="260" viewBox="0 0 880 260" preserveAspectRatio="none" style="overflow:visible"></svg>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;">Client: Razor · Segment: Affluent South Africa</div>
+      </div>
+    </div>
+
+    <!-- ARTICLES placeholder -->
+    <div class="tab-panel" id="panel-articles">
+      <div style="padding:60px 0;text-align:center;color:var(--text-muted);font-size:14px;">Full articles view coming soon.</div>
     </div>
 
   </div>
@@ -804,6 +833,162 @@ function renderMonitorChart() {
     text.setAttribute('font-family','Inter'); text.setAttribute('text-anchor','middle');
     text.textContent = dateLabel;
     svg.appendChild(text);
+  });
+}
+
+// ── MOMENTS CHART (article volume spikes over timeline) ──────
+function renderMomentsChart() {
+  const svg = document.getElementById('moments-svg');
+  if (!svg || svg.dataset.rendered) return;
+  svg.dataset.rendered = '1';
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 880, H = 260, padL = 40, padR = 20, padT = 20, padB = 36;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  const monthMap = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  function parseDate(s) {
+    const p = s.replace('.','').split(' ');
+    return new Date(parseInt(p[2] || new Date().getFullYear()), monthMap[p[1]] - 1, parseInt(p[0]));
+  }
+
+  // Bin stories by month
+  const bins = {};
+  stories.forEach(s => {
+    const d = parseDate(s.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    bins[key] = bins[key] || { label: s.date.replace(/\d+ /, '').replace(/ \d{4}/,'') + ' \'' + String(d.getFullYear()).slice(2), count: 0, score: 0, stories: [] };
+    bins[key].count++;
+    bins[key].score += s.score;
+    bins[key].stories.push(s);
+  });
+
+  // Fill any gaps between min and max month
+  const keys = Object.keys(bins).sort();
+  if (keys.length === 0) return;
+  const [minY, minM] = keys[0].split('-').map(Number);
+  const [maxY, maxM] = keys[keys.length-1].split('-').map(Number);
+  const allKeys = [];
+  let y = minY, m = minM;
+  while (y < maxY || (y === maxY && m <= maxM)) {
+    const k = `${y}-${String(m).padStart(2,'0')}`;
+    if (!bins[k]) bins[k] = { label: new Date(y, m-1, 1).toLocaleString('default',{month:'short'}) + ' \'' + String(y).slice(2), count: 0, score: 0, stories: [] };
+    allKeys.push(k);
+    m++; if (m > 12) { m = 1; y++; }
+  }
+
+  const counts = allKeys.map(k => bins[k].count);
+  const maxCount = Math.max(...counts, 1);
+
+  // Z-score spike detection
+  const mean = counts.reduce((a,b) => a+b, 0) / counts.length;
+  const std = Math.sqrt(counts.reduce((a,b) => a + Math.pow(b-mean,2), 0) / counts.length) || 1;
+  const zScores = counts.map(c => (c - mean) / std);
+  const isSpike = zScores.map(z => z > 1.0); // >1 std dev = spike
+
+  const n = allKeys.length;
+  const step = plotW / Math.max(n - 1, 1);
+
+  function cx(i) { return padL + i * step; }
+  function cy(count) { return padT + plotH - (count / maxCount) * plotH * 0.88; }
+
+  // Defs: gradient
+  const defs = document.createElementNS(ns, 'defs');
+  const grad = document.createElementNS(ns, 'linearGradient');
+  grad.setAttribute('id','momAreaG'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s0 = document.createElementNS(ns,'stop');
+  s0.setAttribute('offset','0%'); s0.setAttribute('stop-color','#6c63e0'); s0.setAttribute('stop-opacity','0.18');
+  const s1 = document.createElementNS(ns,'stop');
+  s1.setAttribute('offset','100%'); s1.setAttribute('stop-color','#6c63e0'); s1.setAttribute('stop-opacity','0.02');
+  grad.appendChild(s0); grad.appendChild(s1); defs.appendChild(grad); svg.appendChild(defs);
+
+  // Grid lines
+  [0.25, 0.5, 0.75, 1].forEach(frac => {
+    const yg = padT + plotH - frac * plotH * 0.88;
+    const gl = document.createElementNS(ns,'line');
+    gl.setAttribute('x1', padL); gl.setAttribute('x2', W - padR);
+    gl.setAttribute('y1', yg); gl.setAttribute('y2', yg);
+    gl.setAttribute('stroke','#e4e4ea'); gl.setAttribute('stroke-width','1');
+    svg.appendChild(gl);
+    const lbl = document.createElementNS(ns,'text');
+    lbl.setAttribute('x', padL - 4); lbl.setAttribute('y', yg + 3);
+    lbl.setAttribute('fill','#b0b0c8'); lbl.setAttribute('font-size','8');
+    lbl.setAttribute('font-family','Inter'); lbl.setAttribute('text-anchor','end');
+    lbl.textContent = Math.round(frac * maxCount);
+    svg.appendChild(lbl);
+  });
+
+  // Spike highlight columns
+  allKeys.forEach((k, i) => {
+    if (!isSpike[i]) return;
+    const x = cx(i);
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x', x - step/2); rect.setAttribute('y', padT);
+    rect.setAttribute('width', step); rect.setAttribute('height', plotH);
+    rect.setAttribute('fill','#6c63e0'); rect.setAttribute('fill-opacity','0.07');
+    rect.setAttribute('rx','3');
+    svg.appendChild(rect);
+    // "MOMENT" label
+    const ml = document.createElementNS(ns,'text');
+    ml.setAttribute('x', x); ml.setAttribute('y', padT - 4);
+    ml.setAttribute('fill','#6c63e0'); ml.setAttribute('font-size','8');
+    ml.setAttribute('font-family','Inter'); ml.setAttribute('font-weight','700');
+    ml.setAttribute('text-anchor','middle'); ml.setAttribute('letter-spacing','0.5');
+    ml.textContent = '⚡ MOMENT';
+    svg.appendChild(ml);
+  });
+
+  // Area fill
+  const baseY = padT + plotH;
+  const polyPts = [
+    `${cx(0)},${baseY}`,
+    ...allKeys.map((k,i) => `${cx(i)},${cy(counts[i])}`),
+    `${cx(n-1)},${baseY}`
+  ].join(' ');
+  const area = document.createElementNS(ns,'polygon');
+  area.setAttribute('points', polyPts); area.setAttribute('fill','url(#momAreaG)');
+  svg.appendChild(area);
+
+  // Line
+  const linePts = allKeys.map((k,i) => `${cx(i)},${cy(counts[i])}`).join(' ');
+  const line = document.createElementNS(ns,'polyline');
+  line.setAttribute('points', linePts); line.setAttribute('fill','none');
+  line.setAttribute('stroke','#6c63e0'); line.setAttribute('stroke-width','2');
+  line.setAttribute('stroke-linecap','round'); line.setAttribute('stroke-linejoin','round');
+  svg.appendChild(line);
+
+  // Points + date labels
+  allKeys.forEach((k, i) => {
+    const x = cx(i), y = cy(counts[i]);
+    const spike = isSpike[i];
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx', x); circle.setAttribute('cy', y);
+    circle.setAttribute('r', spike ? '5.5' : '4');
+    circle.setAttribute('fill', spike ? '#6c63e0' : '#fff');
+    circle.setAttribute('stroke', spike ? '#5040c0' : '#6c63e0');
+    circle.setAttribute('stroke-width', spike ? '2.5' : '1.5');
+    svg.appendChild(circle);
+
+    if (counts[i] > 0 && spike) {
+      const ct = document.createElementNS(ns,'text');
+      ct.setAttribute('x', x); ct.setAttribute('y', y - 9);
+      ct.setAttribute('fill','#5040c0'); ct.setAttribute('font-size','9');
+      ct.setAttribute('font-family','Inter'); ct.setAttribute('font-weight','700');
+      ct.setAttribute('text-anchor','middle');
+      ct.textContent = counts[i];
+      svg.appendChild(ct);
+    }
+
+    // Date label (show every other to avoid crowding)
+    if (i % 2 === 0 || n <= 8) {
+      const tl = document.createElementNS(ns,'text');
+      tl.setAttribute('x', x); tl.setAttribute('y', H - 4);
+      tl.setAttribute('fill','#9898b0'); tl.setAttribute('font-size','9');
+      tl.setAttribute('font-family','Inter'); tl.setAttribute('text-anchor','middle');
+      tl.textContent = bins[k].label;
+      svg.appendChild(tl);
+    }
   });
 }
 
